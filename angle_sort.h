@@ -19,6 +19,7 @@ bool cmp(const point &a, const point &b) {
     return cross(a, b) > 0;
 }
 
+// need to remove origin point ((0, 0))
 void argument_sort(vector<point> &points) {
     sort(points.begin(), points.end(), cmp);
 }

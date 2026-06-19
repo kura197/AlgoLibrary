@@ -1,7 +1,6 @@
 //// 強連結成分分解 (参考 : https://manabitimes.jp/math/1250)
 //// https://atcoder.jp/contests/typical90/tasks/typical90_u
 //// O(∣V∣+∣E∣) 
-//// TODO: バグ検出
 
 vector<ll> G[101000];
 

@@ -245,3 +245,42 @@ ll my_sum(ll x, ll y){
 
 LazySegmentTree<0, my_sum> stree(vec);
 LazySegmentTree<-INF, my_max> stree(vec);
+
+
+/////////////////////////
+
+// https://github.com/atcoder/ac-library/blob/master/document_ja/lazysegtree.md
+// 区間最大値取得 + 区間更新
+
+// #include <atcoder/all>
+
+using S = int;
+
+S op(S a, S b) {
+    return max(a, b);
+}
+
+S e() {
+    return 0;
+}
+
+using F = int;
+
+// f: 更新操作
+// x: 現在の値
+S mapping(F f, S x) {
+    if (f == -1) return x;  // 更新なし
+    return f;               // 区間代入
+}
+
+// f after g
+F composition(F f, F g) {
+    if (f == -1) return g;  // 新しい更新がないなら古い更新を残す
+    return f;               // 新しい代入で上書き
+}
+
+F id() {
+    return -1;              // 更新なし
+}
+
+lazy_segtree<S, op, e, F, mapping, composition, id> seg(W+1);

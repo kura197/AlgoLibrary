@@ -1,35 +1,47 @@
-//トポロジカルソート O(|V| + |E|)
+// トポロジカルソート O(|V| + |E|)
+// return {topological sorted vertex array, vertex to topological idx}
+// DAG でない場合、topo.size() < V になる。
+// topo に含まれない頂点の rank は -1。
+pair<vector<int>, vector<int>> Topological_Sort(const vector<vector<int>>& G) {
+    const int V = G.size();
 
-int V, E;
-vector<int> G[10010];
-vector<int> K;
-
-vector<int> Topological_Sort(){
-    queue<int> S;
-    vector<int> L;
-    REP(i,V){
-        if(K[i] == 0)
-            S.push(i);
-    }
-
-    while(!S.empty()){
-        int v = S.front();
-        S.pop();
-        L.push_back(v);
-        for(auto&& next : G[v]){
-            K[next] -= 1;
-            if(K[next] == 0)
-                S.push(next);
+    vector<int> indeg(V, 0);
+    for (int v = 0; v < V; v++) {
+        for (int nv : G[v]) {
+            indeg[nv]++;
         }
     }
 
-    return L;
+    queue<int> que;
+    for (int v = 0; v < V; v++) {
+        if (indeg[v] == 0) que.push(v);
+    }
+
+    vector<int> topo;
+    vector<int> rank(V, -1);
+
+    while (!que.empty()) {
+        int v = que.front();
+        que.pop();
+
+        rank[v] = (int)topo.size();
+        topo.push_back(v);
+
+        for (int nv : G[v]) {
+            indeg[nv]--;
+            if (indeg[nv] == 0) {
+                que.push(nv);
+            }
+        }
+    }
+
+    return {topo, rank};
 }
 
 int main(){
-    vector<int> L = Topological_Sort();
+    const auto [topo, rank] = Topological_Sort(G);
 
-    if(DAG.length() == V){
+    if(topo.size() == N){
         //L is correctly sorted
     }
     else{

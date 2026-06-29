@@ -31,8 +31,8 @@ complex<double> rotate(complex<double> pos, double rot){
 
 /// rot [rad] 回転
 pair<double, double> rotate(pair<double, double> pos, double rot){
-    double y = pos.first;
-    double x = pos.second;
+    double x = pos.first;
+    double y = pos.second;
  
     double nx = x * cos(rot) - y * sin(rot);
     double ny = y * cos(rot) + x * sin(rot);

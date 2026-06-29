@@ -1,6 +1,6 @@
 
 ////素数判定 O(n**1/2)
-bool is_prime(int n){
+bool is_prime(ll n){
     for(ll i = 2; i * i <= n; i++){
         if(n % i == 0) return false;
     }
@@ -10,8 +10,8 @@ bool is_prime(int n){
 #include <vector>
 
 ////約数列挙 O(n**1/2)
-vector<int> divisor(int n){
-    vector<int> res;
+vector<ll> divisor(ll n){
+    vector<ll> res;
     for(ll i = 1; i * i <= n; i++){
         if(n % i == 0){
             res.push_back(i);
@@ -24,8 +24,8 @@ vector<int> divisor(int n){
 #include <map>
 
 ////素因数分解 O(n**1/2)
-map<int, int> prime_factor(int n){
-    map<int, int> res;
+map<ll, int> prime_factor(ll n){
+    map<ll, int> res;
     for(ll i = 2; i * i <= n; i++){
         while(n % i == 0){
             ++res[i];

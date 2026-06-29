@@ -1,7 +1,7 @@
 // check by tenkei-009: https://atcoder.jp/contests/typical90/submissions/76743434
 
 struct point {
-    int x, y;
+    long long x, y;
 };
 
 bool operator<(const point &a, const point &b) {
@@ -45,6 +45,48 @@ double get_radian(point a, point b) {
 
 double get_degree(point a, point b) {
     return get_radian(a, b) * 180.0 / acos(-1); // [-180, 180]
+}
+
+long long signed_area2(const vector<point> &polygon) {
+    int n = polygon.size();
+    long long area2 = 0;
+    for (int i = 0; i < n; i++) {
+        const point &a = polygon[i];
+        const point &b = polygon[(i + 1) % n];
+        area2 += cross(a, b);
+    }
+    return area2;
+}
+
+long long polygon_area2(const vector<point> &polygon) {
+    long long area2 = signed_area2(polygon);
+    if (area2 < 0) area2 *= -1;
+    return area2;
+}
+
+long long lattice_points_on_polygon(const vector<point> &polygon) {
+    int n = polygon.size();
+    long long boundary = 0;
+    for (int i = 0; i < n; i++) {
+        long long dx = (long long)polygon[(i + 1) % n].x - polygon[i].x;
+        long long dy = (long long)polygon[(i + 1) % n].y - polygon[i].y;
+        if (dx < 0) dx *= -1;
+        if (dy < 0) dy *= -1;
+        boundary += gcd(dx, dy);
+    }
+    return boundary;
+}
+
+long long lattice_points_inside_polygon(const vector<point> &polygon) {
+    long long area2 = polygon_area2(polygon);
+    long long boundary = lattice_points_on_polygon(polygon);
+    return (area2 - boundary + 2) / 2;
+}
+
+long long lattice_points_on_or_inside_polygon(const vector<point> &polygon) {
+    long long area2 = polygon_area2(polygon);
+    long long boundary = lattice_points_on_polygon(polygon);
+    return (area2 + boundary + 2) / 2;
 }
 
 vector<point> convex_hull(vector<point> points, bool include_collinear = false) {

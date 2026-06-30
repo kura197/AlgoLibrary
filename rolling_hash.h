@@ -92,3 +92,101 @@ Hash get_hash(const vector<ll>& vec){
     }
     return hash;
 }
+
+/////////////////////////////////
+
+template<long long MOD=1000000009>
+struct RollingDequeHash {
+    using ll = long long;
+
+    ll base;
+    ll inv_base;
+    vector<ll> pow_base;
+
+    deque<ll> dq;
+    ll h = 0;
+
+    RollingDequeHash(ll base_) : base(base_) {
+        inv_base = modinv(base, MOD);
+        pow_base.push_back(1);
+    }
+
+    static ll modpow(ll a, ll e) {
+        ll r = 1;
+        while (e > 0) {
+            if (e & 1) r = r * a % MOD;
+            a = a * a % MOD;
+            e >>= 1;
+        }
+        return r;
+    }
+
+    static ll modinv(ll a, ll mod) {
+        // MOD が素数なら Fermat でOK
+        return modpow(a, mod - 2);
+    }
+
+    void ensure_pow(int n) {
+        while ((int)pow_base.size() <= n) {
+            pow_base.push_back(pow_base.back() * base % MOD);
+        }
+    }
+
+    int size() const {
+        return dq.size();
+    }
+
+    bool empty() const {
+        return dq.empty();
+    }
+
+    ll get() const {
+        return h;
+    }
+
+    void push_back(ll x) {
+        // x は 1 以上推奨
+        x %= MOD;
+        h = (h * base + x) % MOD;
+        dq.push_back(x);
+        ensure_pow(size());
+    }
+
+    void push_front(ll x) {
+        // x は 1 以上推奨
+        x %= MOD;
+        ensure_pow(size());
+        h = (x * pow_base[size()] + h) % MOD;
+        dq.push_front(x);
+        ensure_pow(size());
+    }
+
+    ll pop_back() {
+        ll x = dq.back();
+        dq.pop_back();
+
+        h = (h - x) % MOD;
+        if (h < 0) h += MOD;
+        h = h * inv_base % MOD;
+
+        return x;
+    }
+
+    ll pop_front() {
+        ll x = dq.front();
+        dq.pop_front();
+
+        ensure_pow(size());
+        h = (h - x * pow_base[size()] % MOD) % MOD;
+        if (h < 0) h += MOD;
+
+        return x;
+    }
+
+    bool operator==(const RollingDequeHash& other) const {
+        return size() == other.size() && h == other.h;
+    }
+};
+
+// const ll BASE = 911382323;
+// RollingDequeHash hash(BASE);

@@ -1,5 +1,41 @@
 
 
+//MODありの場合 (ACL)
+//------------------------------------------------
+using mint = modint998244353;
+
+vector<mint> fact;
+vector<mint> frev;
+
+void prepare(int size){
+    fact.assign(size + 1, 1);
+    frev.assign(size + 1, 1);
+    for(int i = 1; i <= size; i++){
+        fact[i] = fact[i-1] * i;
+    }
+    frev[size] = fact[size].inv();
+    for(int i = size; i >= 1; i--){
+        frev[i-1] = frev[i] * i;
+    }
+}
+
+ll comb(int n, int k){
+    if(n < 0 || k < 0 || n < k) return 0;
+    if(n == 0 || k == 0) return 1;
+    return (fact[n] * frev[k] * frev[n-k]).val();
+}
+
+ll perm(int n, int k){
+    if(n < 0 || k < 0 || n < k) return 0;
+    if(n == 0 || k == 0) return 1;
+    return (fact[n] * frev[n-k]).val();
+}
+
+//in main function
+prepare(size);
+
+//------------------------------------------------
+
 //MODありの場合
 //------------------------------------------------
 const ll MOD = 1e9+7;
@@ -15,16 +51,6 @@ ll rev(ll a, ll p){
     if(p % 2 == 1) tmp = tmp * a % MOD;
     return tmp;
 }
-
-
-void calc_fact(){
-    fact[0] = frev[0] = 1;
-    for(int i = 1; i <= MAX_N; i++){
-        fact[i] = (fact[i-1] * i) % MOD;
-        frev[i] = rev(fact[i], MOD-2);
-    }
-}
-
 
 ll comb(int n, int k){
     if(n < 0 || k < 0 || n < k) return 0;
@@ -110,14 +136,6 @@ struct Comb {
         tmp = tmp * tmp % MOD;
         if(p % 2 == 1) tmp = tmp * a % MOD;
         return tmp;
-    }
-
-    constexpr void calc_fact(){
-        fact[0] = frev[0] = 1;
-        for(int i = 1; i <= N; i++){
-            fact[i] = (fact[i-1] * i) % MOD;
-            frev[i] = rev(fact[i], MOD-2);
-        }
     }
 
     constexpr void prepare(){

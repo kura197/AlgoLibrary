@@ -1,130 +1,52 @@
-/* LCA(G, root): 木 G に対する根を root として Lowest Common Ancestor を求める構造体
-    query(u,v): u と v の LCA を求める。計算量 O(logn)
-    前処理: O(nlogn)時間, O(nlogn)空間
-*/
-//// 参照: https://algo-logic.info/lca/
-//// verify: https://codeforces.com/contest/1380/problem/E
-//// 蟻本実装より高速？？
-
-struct LCA {
-    vector<vector<int>> parent;  // parent[k][u]:= u の 2^k 先の親
-    vector<int> dist;            // root からの距離
-    LCA(const vector<vector<int>> &G, int root = 0) { init(G, root); }
-
-    // 初期化
-    void init(const vector<vector<int>> &G, int root = 0) {
-        int V = G.size();
-        int K = 1;
-        while ((1 << K) < V) K++;
-        parent.assign(K, vector<int>(V, -1));
-        dist.assign(V, -1);
-        dfs(G, root, -1, 0);
-        for (int k = 0; k + 1 < K; k++) {
-            for (int v = 0; v < V; v++) {
-                if (parent[k][v] < 0) {
-                    parent[k + 1][v] = -1;
-                } else {
-                    parent[k + 1][v] = parent[k][parent[k][v]];
-                }
-            }
-        }
-    }
-
-    // 根からの距離と1つ先の頂点を求める
-    void dfs(const vector<vector<int>> &G, int v, int p, int d) {
-        parent[0][v] = p;
-        dist[v] = d;
-        for (auto nv : G[v]) {
-            if (nv != p) dfs(G, nv, v, d + 1);
-        }
-    }
-
-    int query(int u, int v) {
-        if (dist[u] < dist[v]) swap(u, v);  // u の方が深いとする
-        int K = parent.size();
-        // LCA までの距離を同じにする
-        for (int k = 0; k < K; k++) {
-            if ((dist[u] - dist[v]) >> k & 1) {
-                u = parent[k][u];
-            }
-        }
-        // 二分探索で LCA を求める
-        if (u == v) return u;
-        for (int k = K - 1; k >= 0; k--) {
-            if (parent[k][u] != parent[k][v]) {
-                u = parent[k][u];
-                v = parent[k][v];
-            }
-        }
-        return parent[0][u];
-    }
-
-    int get_dist(int u, int v){
-        int par = query(u, v);
-        return dist[u] + dist[v] - 2*dist[par];
-    }
-};
-
-
-//////////////////////////
-/* 
+/*
     LCA(G, root): 木 G に対する根を root として Lowest Common Ancestor を求める構造体
-    頂点u, v間の辺の重みの最大値も求められる。
+    query(u, v): u と v の LCA を求める。計算量 O(log N)
+    get_dist(u, v): u と v の辺数距離を求める。計算量 O(log N)
+    get_cost_dist(u, v): u と v の重み付き距離を求める。計算量 O(log N)
+    get_max_cost(u, v): u と v の経路上の辺重み最大値を求める。計算量 O(log N)
+    前処理: O(N log N)
 */
 
-using P = pair<ll, ll>;
+#include "graph.h"
+
 struct LCA {
-    vector<vector<int>> parent;  // parent[k][u]:= u の 2^k 先の親
-    vector<int> dist;            // root からの距離
-    vector<vector<ll>> max_cost; // max_cost[k][u] := uの2^k 先までの辺の最大値
-    LCA(const vector<vector<P>> &G, int root = 0) { init(G, root); }
+    std::vector<std::vector<int>> parent;
+    std::vector<int> depth;
+    std::vector<long long> cost_dist;
+    std::vector<std::vector<long long>> max_cost;
 
-    // 初期化
-    void init(const vector<vector<P>> &G, int root = 0) {
-        int V = G.size();
-        int K = 1;
-        while ((1 << K) < V) K++;
-        //K += 3;
-        parent.assign(K, vector<int>(V, -1));
-        max_cost.assign(K, vector<ll>(V, 0));
-        dist.assign(V, -1);
-        dfs(G, root, -1, 0, 0);
-        for (int k = 0; k + 1 < K; k++) {
-            for (int v = 0; v < V; v++) {
-                if (parent[k][v] < 0) {
-                    max_cost[k+1][v] = 0;
-                    parent[k + 1][v] = -1;
-                } else {
-                    chmax(max_cost[k + 1][v], max(max_cost[k][v], max_cost[k][parent[k][v]]));
-                    parent[k + 1][v] = parent[k][parent[k][v]];
-                    //chmax(max_cost[k][parent[k][v]], max_cost[k + 1][v]);
-                }
-            }
-        }
+    LCA() = default;
+
+    // LCAを前計算する O(N log N)
+    LCA(const Graph& G, int root = 0) { init(G, root); }
+
+    // LCAを前計算する O(N log N)
+    void init(const Graph& G, int root = 0) {
+        int vertex_count = G.size();
+        int log = 1;
+        while ((1 << log) < vertex_count) log++;
+
+        parent.assign(log, std::vector<int>(vertex_count, -1));
+        depth.assign(vertex_count, -1);
+        cost_dist.assign(vertex_count, 0);
+        max_cost.assign(log, std::vector<long long>(vertex_count, 0));
+
+        dfs_weighted(G, root, -1, 0, 0, 0);
+        build();
     }
 
-    // 根からの距離と1つ先の頂点を求める
-    void dfs(const vector<vector<P>> &G, int v, int p, ll c, int d) {
-        parent[0][v] = p;
-        max_cost[0][v] = c;
-        dist[v] = d;
-        for (auto [nv, c] : G[v]) {
-            if (nv != p) dfs(G, nv, v, c, d + 1);
-        }
-    }
+    // u と v の LCA を求める O(log N)
+    int query(int u, int v) const {
+        if (depth[u] < depth[v]) std::swap(u, v);
+        int log = (int)parent.size();
 
-    int query(int u, int v) {
-        if (dist[u] < dist[v]) swap(u, v);  // u の方が深いとする
-        int K = parent.size();
-        // LCA までの距離を同じにする
-        for (int k = 0; k < K; k++) {
-            if ((dist[u] - dist[v]) >> k & 1) {
-                u = parent[k][u];
-            }
+        int diff = depth[u] - depth[v];
+        for (int k = 0; k < log; k++) {
+            if ((diff >> k) & 1) u = parent[k][u];
         }
-        // 二分探索で LCA を求める
+
         if (u == v) return u;
-        for (int k = K - 1; k >= 0; k--) {
+        for (int k = log - 1; k >= 0; k--) {
             if (parent[k][u] != parent[k][v]) {
                 u = parent[k][u];
                 v = parent[k][v];
@@ -133,23 +55,63 @@ struct LCA {
         return parent[0][u];
     }
 
-    //// return max edge weight between u and v.
-    ll get_max_cost(int u, int v){
+    // u と v の辺数距離を求める O(log N)
+    int get_dist(int u, int v) const {
         int lca = query(u, v);
-        ll ret = 0;
-        REP(i,2){
-            int diff = dist[u] - dist[lca];
-            int x = 0;
-            int t = u;
-            while(diff > 0){
-                if(diff % 2) {
-                    chmax(ret, max_cost[x][t]);
-                    t = parent[x][t];
+        return depth[u] + depth[v] - 2 * depth[lca];
+    }
+
+    // u と v の重み付き距離を求める O(log N)
+    long long get_cost_dist(int u, int v) const {
+        int lca = query(u, v);
+        return cost_dist[u] + cost_dist[v] - 2 * cost_dist[lca];
+    }
+
+    // u と v の経路上の辺重み最大値を求める O(log N)
+    long long get_max_cost(int u, int v) const {
+        int lca = query(u, v);
+        long long ret = 0;
+        ret = std::max(ret, climb_max_cost(u, depth[u] - depth[lca]));
+        ret = std::max(ret, climb_max_cost(v, depth[v] - depth[lca]));
+        return ret;
+    }
+
+private:
+    void dfs_weighted(const Graph& G, int v, int p, long long cost, long long current_cost_dist, int d) {
+        parent[0][v] = p;
+        max_cost[0][v] = cost;
+        cost_dist[v] = current_cost_dist;
+        depth[v] = d;
+        for (const auto& [nv, edge_cost] : G[v]) {
+            if (nv == p) continue;
+            dfs_weighted(G, nv, v, edge_cost, current_cost_dist + edge_cost, d + 1);
+        }
+    }
+
+    void build() {
+        int log = (int)parent.size();
+        int vertex_count = (int)depth.size();
+        for (int k = 0; k + 1 < log; k++) {
+            for (int v = 0; v < vertex_count; v++) {
+                if (parent[k][v] < 0) {
+                    parent[k + 1][v] = -1;
+                    max_cost[k + 1][v] = max_cost[k][v];
+                } else {
+                    parent[k + 1][v] = parent[k][parent[k][v]];
+                    max_cost[k + 1][v] = std::max(max_cost[k][v], max_cost[k][parent[k][v]]);
                 }
-                x++;
-                diff /= 2;
             }
-            swap(u, v);
+        }
+    }
+
+    long long climb_max_cost(int v, int diff) const {
+        long long ret = 0;
+        int log = (int)parent.size();
+        for (int k = 0; k < log; k++) {
+            if ((diff >> k) & 1) {
+                ret = std::max(ret, max_cost[k][v]);
+                v = parent[k][v];
+            }
         }
         return ret;
     }

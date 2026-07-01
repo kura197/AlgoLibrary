@@ -1,65 +1,67 @@
-//// 強連結成分分解 (参考 : https://manabitimes.jp/math/1250)
-//// https://atcoder.jp/contests/typical90/tasks/typical90_u
-//// O(∣V∣+∣E∣) 
+#include <algorithm>
+#include <vector>
+#include "graph.h"
 
-vector<ll> G[101000];
+// 強連結成分分解 O(V + E)
+// Graphの辺の向きをそのまま使い、辺重みは無視する
+struct SCC {
+    int vertex_count;
+    std::vector<std::vector<int>> graph;
+    std::vector<std::vector<int>> reverse_graph;
+    // component_id[v] := 頂点vが属する成分番号
+    // 縮約DAG上で u -> v なら component_id[u] <= component_id[v] になる
+    std::vector<int> component_id;
 
-using P = pair<ll, ll>;
-
-//// それ以上進めなくなる頂点を順に探索
-void dfs1(ll v, ll& cnt, vector<P>& T, vector<bool>& isvisit){
-    isvisit[v] = true;
-    for(auto& nv : G[v]){
-        if(isvisit[nv]) continue;
-        dfs1(nv, cnt, T, isvisit);
+    // Graphから強連結成分分解用の有向グラフを作る O(V + E)
+    SCC(const Graph& G)
+        : vertex_count(G.size()),
+          graph(vertex_count),
+          reverse_graph(vertex_count),
+          component_id(vertex_count, -1) {
+        for (int from = 0; from < vertex_count; from++) {
+            for (const auto& [to, cost] : G[from]) {
+                graph[from].push_back(to);
+                reverse_graph[to].push_back(from);
+            }
+        }
     }
 
-    T[v] = P(cnt++, v);
-}
+    // 強連結成分分解を行い、成分の頂点リストをトポロジカル順に返す O(V + E)
+    std::vector<std::vector<int>> decompose() {
+        std::vector<int> order;
+        std::vector<bool> used(vertex_count, false);
+        for (int v = 0; v < vertex_count; v++) {
+            if (!used[v]) dfs_order(v, used, order);
+        }
 
-//// 探索した頂点をgroupに入れる
-void dfs2(ll v, vector<ll>& group, vector<bool>& isvisit, vector<vector<ll>>& RG){
-    isvisit[v] = true;
-    group.push_back(v);
-    for(auto& nv : RG[v]){
-        if(isvisit[nv]) continue;
-        dfs2(nv, group, isvisit, RG);
-    }
-}
+        std::reverse(order.begin(), order.end());
+        std::fill(component_id.begin(), component_id.end(), -1);
 
-//// 強連結成分分解
-void calc_SCC(ll N, vector<vector<ll>>& SCC){
-    //// 進めなくなった頂点番号
-    //// {順番, 頂点番号}
-    vector<P> T(N);
+        std::vector<std::vector<int>> components;
+        for (int v : order) {
+            if (component_id[v] != -1) continue;
+            components.push_back({});
+            int id = (int)components.size() - 1;
+            dfs_component(v, id, components.back());
+        }
 
-    //// Tを計算
-    vector<bool> isvisit1(N);
-    ll cnt = 0;
-    REP(v,N){
-        if(isvisit1[v]) continue;
-        dfs1(v, cnt, T, isvisit1);
+        return components;
     }
 
-    //// 辺を逆向きに張ったグラフを用意
-    vector<vector<ll>> RG(N);
-    REP(v,N){
-        for(auto& nv : G[v])
-            RG[nv].push_back(v);
+private:
+    void dfs_order(int v, std::vector<bool>& used, std::vector<int>& order) {
+        used[v] = true;
+        for (int nv : graph[v]) {
+            if (!used[nv]) dfs_order(nv, used, order);
+        }
+        order.push_back(v);
     }
 
-    //// 降順に頂点を探索し、すすめる頂点までを同じ成分とする
-    sort(T.rbegin(), T.rend());
-    vector<bool> isvisit2(N);
-    for(auto& [_, v] : T){
-        if(isvisit2[v]) continue;
-        vector<ll> group;
-        dfs2(v, group, isvisit2, RG);
-        SCC.push_back(group);
+    void dfs_component(int v, int id, std::vector<int>& component) {
+        component_id[v] = id;
+        component.push_back(v);
+        for (int nv : reverse_graph[v]) {
+            if (component_id[nv] == -1) dfs_component(nv, id, component);
+        }
     }
-}
-
-
-//// in main
-vector<vector<ll>> SCC;
-calc_SCC(N, SCC);
+};

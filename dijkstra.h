@@ -1,121 +1,71 @@
+#pragma once
 
-/// dijkstra法 
-/// O(E*logV)
+#include <functional>
+#include <limits>
+#include <queue>
+#include <utility>
+#include <vector>
 
-const ll INF = 1e15;
-vector<ll> G[200100];
-using P = pair<ll, ll>;
+#include "graph.h"
 
-void dijkstra(int s, vector<ll>& d){
-    for(auto& x : d) x = INF;
-    d[s] = 0;
-    priority_queue<P, vector<P>, greater<P> > que;
-    que.push(make_pair(0, s));
-    while(!que.empty()){
-        auto [c, v] = que.top();
-        que.pop();
-        if(d[v] < c) continue;
-        for(auto&& nv : G[v]){
-            ll nc = c + 1;
-            if(d[nv] > nc){
-                d[nv] = nc;
-                que.push(make_pair(nc, nv));
+// 非負辺を持つグラフで、始点 src から各頂点への最短距離を計算する. O(E log V)
+std::vector<long long> dijkstra(const Graph& graph, int src) {
+    const long long INF = std::numeric_limits<long long>::max();
+    std::vector<long long> dist(graph.size(), INF);
+    using State = std::pair<long long, int>;
+
+    std::priority_queue<State, std::vector<State>, std::greater<State>> pq;
+    dist[src] = 0;
+    pq.push({0, src});
+
+    while (!pq.empty()) {
+        auto [cost, v] = pq.top();
+        pq.pop();
+
+        if (dist[v] < cost) continue;
+
+        for (const auto& [to, edge_cost] : graph[v]) {
+            if (dist[to] <= cost + edge_cost) continue;
+            dist[to] = cost + edge_cost;
+            pq.push({dist[to], to});
+        }
+    }
+
+    return dist;
+}
+
+// 非負辺を持つグラフで、始点 src から各頂点への最短距離と最短経路数を計算する. O(E log V)
+// path_count は mod > 0 のもとで mod で管理する
+std::pair<std::vector<long long>, std::vector<long long>>
+dijkstra_count_paths(const Graph& graph, int src, long long mod) {
+    const long long INF = std::numeric_limits<long long>::max();
+    std::vector<long long> dist(graph.size(), INF);
+    std::vector<long long> path_count(graph.size(), 0);
+    using State = std::pair<long long, int>;
+
+    std::priority_queue<State, std::vector<State>, std::greater<State>> pq;
+    dist[src] = 0;
+    path_count[src] = 1 % mod;
+    pq.push({0, src});
+
+    while (!pq.empty()) {
+        auto [cost, v] = pq.top();
+        pq.pop();
+
+        if (dist[v] < cost) continue;
+
+        for (const auto& [to, edge_cost] : graph[v]) {
+            long long next_cost = cost + edge_cost;
+            if (dist[to] > next_cost) {
+                dist[to] = next_cost;
+                path_count[to] = path_count[v];
+                pq.push({next_cost, to});
+            } else if (dist[to] == next_cost) {
+                path_count[to] += path_count[v];
+                path_count[to] %= mod;
             }
         }
     }
+
+    return {dist, path_count};
 }
-
-
-///  最短経路数も同時に求める
-/// 参考: https://drken1215.hatenablog.com/entry/2018/02/09/003200
-/// verify: https://codeforces.com/contest/1197/submission/143374077
-
-void dijkstra(int s, vector<ll>& d, vector<ll>& num){
-    for(auto& x : d) x = INF;
-    for(auto& x : num) x = 0;
-    d[s] = 0;
-    num[s] = 1;
-    priority_queue<P, vector<P>, greater<P> > que;
-    que.push(make_pair(0, s));
-    while(!que.empty()){
-        auto [c, v] = que.top();
-        que.pop();
-        if(d[v] < c) continue;
-        for(auto&& [nv, cost] : G[v]){
-            ll nc = c + cost;
-            if(d[nv] > nc){
-                d[nv] = nc;
-                num[nv] = num[v];
-                que.push(make_pair(nc, nv));
-            } else if(d[nv] == nc){
-                num[nv] += num[v];
-                num[nv] %= MOD;
-            }
-        }
-    }
-}
-
-
-/////////////////////////
-struct edge{int to, cost;};
-typedef pair<int, int> P;
-
-int V;
-vector<edge> G[MAX_V];
-int d[MAX_V];
-
-
-// O(E*logV)
-void dijkstra(int s){
-    priority_queue<P, vector<P>, greater<P> > que;
-    fill(d, d+V, INF);
-    d[s] = 0;
-    que.push(P(0,s));
-
-    while(!que.empty()){
-        P p = que.top(); que.pop();
-        int v = p.second;
-        if(d[v] < p.first) continue;
-        for(int i = 0; i < G[v].size(); i++){
-            edge e = G[v][i];
-            if(d[e.to] > d[v] + e.cost){
-                d[e.to] = d[v] + e.cost;
-                que.push(P(d[e.to], e.to));
-            }
-        }
-    }
-}
-
-////////////////////////
-
-const ll INF = LLONG_MAX;
-const int MAX_V = 100010;
-
-vector<pair<int, ll> > G[MAX_V];
-vector<ll> d;
-
-typedef pair<ll, int> P;
-
-void dijkstra(int s, int V){
-    d.resize(V, INF);
-    d[s] = 0;
-    priority_queue<P, vector<P>, greater<P> > que;
-    que.push(make_pair(0, s));
-    while(!que.empty()){
-        auto p = que.top();
-        que.pop();
-        ll c = p.first;
-        int a = p.second;
-        if(d[a] < c) continue;
-        for(auto&& p : G[a]){
-            int b = p.first;
-            ll cc = p.second;
-            if(d[b] > c + cc){
-                d[b] = c + cc;
-                que.push(make_pair(d[b], b));
-            }
-        }
-    }
-}
-
-

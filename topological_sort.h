@@ -37,14 +37,3 @@ pair<vector<int>, vector<int>> Topological_Sort(const vector<vector<int>>& G) {
 
     return {topo, rank};
 }
-
-int main(){
-    const auto [topo, rank] = Topological_Sort(G);
-
-    if(topo.size() == N){
-        //L is correctly sorted
-    }
-    else{
-        //L is not DAG. impossible to sort.
-    }
-}

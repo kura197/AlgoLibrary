@@ -1,3 +1,5 @@
+#pragma once
+
 //// 二部グラフ判定
 
 vector<int> G[100100];

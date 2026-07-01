@@ -1,3 +1,5 @@
+#pragma once
+
 //// 遅延評価
 //// https://atcoder.jp/contests/abl/editorial/1204
 //// https://atcoder.jp/contests/typical90/submissions/25318781

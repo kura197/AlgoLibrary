@@ -1,3 +1,5 @@
+#pragma once
+
 //// Reference : https://qiita.com/drken/items/ae02240cd1f8edfc86fd
 
 

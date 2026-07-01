@@ -1,3 +1,5 @@
+#pragma once
+
 // check by tenkei-009: https://atcoder.jp/contests/typical90/submissions/76743434
 
 struct point {

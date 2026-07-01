@@ -1,3 +1,5 @@
+#pragma once
+
 //// 最大流 Dinic法 O(|E||V|^2)
 //// 二部マッチング : O(|E||V|^(1/2))
 //// 蟻本 p.194
@@ -133,4 +135,3 @@ int main(){
 
     int flow = max_flow(0, 3);
 }
-

@@ -1,3 +1,5 @@
+#pragma once
+
 // 拡張Euclidの互除法 O(log max(a, b))
 // ax + by = gcd(a, b) を満たす x, y と gcd(a, b) を返す
 long long extGCD(long long a, long long b, long long& x, long long& y){

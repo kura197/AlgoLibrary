@@ -1,3 +1,5 @@
+#pragma once
+
 
 //Binary Indexed tree
 

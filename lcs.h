@@ -1,3 +1,5 @@
+#pragma once
+
 /// 最長共通部分列  蟻本 p.56 
 /// https://atcoder.jp/contests/dp/tasks/dp_f
 /// O(|S||T|)

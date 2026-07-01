@@ -1,3 +1,5 @@
+#pragma once
+
 /// KMP法
 /// strからwordとマッチするidxを返す。 O(n)
 /// まだ理解していない

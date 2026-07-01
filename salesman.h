@@ -1,3 +1,5 @@
+#pragma once
+
 
 const ll INF = 1e15;
 #define MAX_N 18

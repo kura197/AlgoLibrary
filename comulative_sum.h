@@ -1,3 +1,5 @@
+#pragma once
+
 /// 2次元累積和
 /// row-first
 

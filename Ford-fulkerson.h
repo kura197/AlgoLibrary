@@ -1,3 +1,5 @@
+#pragma once
+
 //最大流    O(Ef), f:最大フロー
 
 const int MAX_V = 101000;
@@ -45,4 +47,3 @@ void add_edge(int from, int to, int cap){
     G[from].push_back((edge){to, cap, G[to].size()});
     G[to].push_back((edge){from, 0, G[from].size() - 1});
 }
-

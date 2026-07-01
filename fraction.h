@@ -1,3 +1,5 @@
+#pragma once
+
 /// 有理数型 (doubleなどの誤差が問題になる場合に使用)
 /// 参考: https://atcoder.jp/contests/abc225/editorial/2853
 /// 第一象限以外で使用できるか不明

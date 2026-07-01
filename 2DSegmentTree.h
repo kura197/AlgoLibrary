@@ -1,3 +1,5 @@
+#pragma once
+
 /// 2次元セグメント木
 /// 参考: http://algoogle.hadrori.jp/algorithm/2d-segment-tree.html
 /// https://atcoder.jp/contests/abc228/submissions/me

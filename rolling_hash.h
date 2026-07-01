@@ -1,3 +1,5 @@
+#pragma once
+
 const long long MOD1 = 1000000007LL;
 const long long MOD2 = 1000000009LL;
 const long long B1 = 1000003LL;

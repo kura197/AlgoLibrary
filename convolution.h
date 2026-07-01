@@ -1,3 +1,5 @@
+#pragma once
+
 /// 畳み込み演算 f(x) * g(x)
 /// O(N*logN) (N > f.size() + g.size())
 /// 参考: https://atcoder.jp/contests/atc001/tasks/fft_://atcoder.jp/contests/atc001/tasks/fft_c 

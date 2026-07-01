@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 
 const ll INF = 10000000;

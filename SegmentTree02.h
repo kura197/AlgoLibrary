@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 
 ////  初期値,関数指定

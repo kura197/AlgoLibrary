@@ -1,4 +1,6 @@
 
+#pragma once
+
 
 /// 3点を通る中心座標(外心)、半径を求める
 tuple<double, double, double> calc_circle(double x1, double y1, double x2, double y2, double x3, double y3){

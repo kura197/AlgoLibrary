@@ -1,3 +1,5 @@
+#pragma once
+
 /*
     LCA(G, root): 木 G に対する根を root として Lowest Common Ancestor を求める構造体
     query(u, v): u と v の LCA を求める。計算量 O(log N)

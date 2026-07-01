@@ -1,3 +1,5 @@
+#pragma once
+
 /// 最小費用流 (atcoderコンテストならACLを使用). O( F(V+E)logV )
 /// 参考: https://atcoder.github.io/ac-library/document_ja/mincostflow.html
 

@@ -1,3 +1,5 @@
+#pragma once
+
 struct point3 {
     long long x, y, z;
 };

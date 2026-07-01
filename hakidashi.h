@@ -1,3 +1,5 @@
+#pragma once
+
 /// WIP
 /// 掃き出し法 (GF(2))
 /// https://atcoder.jp/contests/typical90/tasks/typical90_be

@@ -1,95 +1,78 @@
-//エラトステネス
-//素数数え上げ
-//O(n loglogn) ~ O(n)
-// https://atcoder.jp/contests/abc177/tasks/abc177_e
+#include <map>
+#include <vector>
 
+// エラトステネスの篩
+// 構築 O(n log log n), 素因数分解 O(log n), 約数列挙 O(約数個数)
+struct Sieve {
+    // primes[i] := i番目の素数
+    std::vector<int> primes;
+    // is_prime[x] := xが素数かどうか
+    std::vector<bool> is_prime;
+    // min_prime[x] := xを割り切る最小の素数
+    std::vector<int> min_prime;
+    // omega[x] := xの異なる素因数の個数
+    std::vector<int> omega;
+    // mobius[x] := xのメビウス関数値
+    // mobius[1] = 1
+    // xが同じ素因数を2回以上含むなら0
+    // xが相異なるk個の素因数の積なら(-1)^k
+    std::vector<int> mobius;
 
-/// prime[x] := x番目の素数
-vector<int> prime;
-/// is_prime[x] := xが素数かどうか
-vector<bool> is_prime;
-/// min_prime[x] := xを割り切る最小の素数
-vector<int> min_prime;
-/// n_prime[x] := xの素因数の種類数
-/// TODO: check
-vector<int> n_prime;
-/// メビウス関数値
-vector<int> mobius;
+    Sieve() = default;
+    Sieve(int n) { build(n); }
 
-void sieve(int n){
-    is_prime.resize(n+1, true);
-    min_prime.resize(n+1, -1);
-    n_prime.resize(n+1, 0);
-    mobius.resize(n+1, 1);
-    is_prime[0] = is_prime[1] = false;
-    for(int i = 2; i <= n; i++){
-        if(is_prime[i]){
-            prime.push_back(i);
+    // n以下について素数情報を前計算する O(n log log n)
+    void build(int n) {
+        primes.clear();
+        is_prime.assign(n + 1, true);
+        min_prime.assign(n + 1, -1);
+        omega.assign(n + 1, 0);
+        mobius.assign(n + 1, 1);
+
+        if (n >= 0) is_prime[0] = false;
+        if (n >= 1) is_prime[1] = false;
+
+        for (int i = 2; i <= n; i++) {
+            if (!is_prime[i]) continue;
+            primes.push_back(i);
             min_prime[i] = i;
-            n_prime[i] = 1;
+            omega[i] = 1;
             mobius[i] = -1;
-            for(int j = 2*i; j <= n; j += i){
+
+            for (int j = 2 * i; j <= n; j += i) {
                 is_prime[j] = false;
-                n_prime[j] += 1;
-                if(min_prime[j] == -1)
-                    min_prime[j] = i;
-                if((j/i) % i == 0) mobius[j] = 0;
+                omega[j]++;
+                if (min_prime[j] == -1) min_prime[j] = i;
+                if ((j / i) % i == 0) mobius[j] = 0;
                 else mobius[j] = -mobius[j];
             }
         }
     }
-}
 
-
-/// 素因数分解 : O(log p)
-/// 先にsieveを実行する必要あり
-map<int, int> prime_factor(int p){
-    map<int, int> primes;
-    while(p > 1){
-        primes[min_prime[p]] += 1;
-        p /= min_prime[p];
+    // 素因数分解する O(log n)
+    std::map<int, int> prime_factor(int n) const {
+        std::map<int, int> res;
+        while (n > 1) {
+            res[min_prime[n]]++;
+            n /= min_prime[n];
+        }
+        return res;
     }
-    return primes;
-}
 
-/// 約数列挙 : O(#divs) (#divs <= 1344 for n <= 10^9)
-/// 参考: https://qiita.com/drken/items/3beb679e54266f20ab63#4-2-%E9%AB%98%E9%80%9F%E7%B4%84%E6%95%B0%E5%88%97%E6%8C%99
-vector<int> divisor(int p){
-    auto primes = prime_factor(p);
-    vector<int> div{1};
-    for(auto& [prime, cnt] : primes){
-        int size = div.size();
-        for(int i = 0; i < size; i++){
-            int x = 1;
-            for(int j = 0; j < cnt; j++){
-                x *= prime;
-                div.push_back(div[i] * x);
+    // 約数を列挙する O(約数個数)
+    std::vector<int> divisor(int n) const {
+        auto factors = prime_factor(n);
+        std::vector<int> res{1};
+        for (const auto& [prime, count] : factors) {
+            int size = (int)res.size();
+            int mul = 1;
+            for (int i = 1; i <= count; i++) {
+                mul *= prime;
+                for (int j = 0; j < size; j++) {
+                    res.push_back(res[j] * mul);
+                }
             }
         }
+        return res;
     }
-    return div;
-}
-
-///////////////////////
-
-/// Original
-
-#define MAX_N 1e6
-
-int prime[MAX_N];
-bool is_prime[MAX_N+1];
-
-int sieve(int n){
-    int p = 0;
-    for(int i = 0; i <= n; i++) is_prime[i] = true;
-    is_prime[0] = is_prime[1] = false;
-    for(int i = 2; i <= n; i++){
-        if(is_prime[i]){
-            prime[p++] = i;
-            for(int j = 2*i; j <= n; j += i) is_prime[j] = false;
-        }
-    }
-    return p;
-}
-
-
+};

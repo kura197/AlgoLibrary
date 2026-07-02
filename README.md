@@ -22,6 +22,7 @@
 - `lca.h`
 - `lcs.h`
 - `lis.h`
+- `mat.h`
 - `mst.h`
 - `point2.h`
 - `point3.h`

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graph.h"
+
 #include <queue>
 #include <utility>
 #include <vector>
@@ -10,12 +12,14 @@ using namespace std;
 // return {topological sorted vertex array, vertex to topological idx}
 // DAG でない場合、topo.size() < V になる。
 // topo に含まれない頂点の rank は -1。
-pair<vector<int>, vector<int>> Topological_Sort(const vector<vector<int>>& G) {
-    const int V = G.size();
+// 有向グラフを想定する。Graph には add_directed_edge() を使うこと。
+pair<vector<int>, vector<int>> Topological_Sort(const Graph& graph) {
+    const int V = graph.size();
 
     vector<int> indeg(V, 0);
     for (int v = 0; v < V; v++) {
-        for (int nv : G[v]) {
+        for (const auto& [nv, cost] : graph[v]) {
+            (void)cost;
             indeg[nv]++;
         }
     }
@@ -35,7 +39,8 @@ pair<vector<int>, vector<int>> Topological_Sort(const vector<vector<int>>& G) {
         rank[v] = (int)topo.size();
         topo.push_back(v);
 
-        for (int nv : G[v]) {
+        for (const auto& [nv, cost] : graph[v]) {
+            (void)cost;
             indeg[nv]--;
             if (indeg[nv] == 0) {
                 que.push(nv);

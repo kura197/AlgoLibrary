@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+using namespace std;
+
 //// 二部グラフ判定
 
 vector<int> G[100100];

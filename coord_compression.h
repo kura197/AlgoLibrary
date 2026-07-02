@@ -1,5 +1,11 @@
 #pragma once
 
+#include <algorithm>
+#include <utility>
+#include <vector>
+
+using namespace std;
+
 // return {compressed vector, original values}
 // xs[compressed[i]] == vec[i]
 pair<vector<int>, vector<long long>> coord_compression(const vector<long long>& vec) {

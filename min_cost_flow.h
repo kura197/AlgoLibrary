@@ -5,8 +5,8 @@
 
 /// 例 (https://codeforces.com/contest/1525/problem/D)
 int main() {
-    auto min_cost = atcoder::mcf_graph<ll, ll>(N+2);
-    const ll F = init.size();
+    auto min_cost = atcoder::mcf_graph<long long, long long>(N+2);
+    const long long F = init.size();
     const int src = N;
     const int sink = N+1;
     for(auto& idx0 : init){

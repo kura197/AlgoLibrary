@@ -1,5 +1,12 @@
 #pragma once
 
+#include <algorithm>
+#include <deque>
+#include <string>
+#include <vector>
+
+using namespace std;
+
 const long long MOD1 = 1000000007LL;
 const long long MOD2 = 1000000009LL;
 const long long B1 = 1000003LL;
@@ -86,7 +93,7 @@ int overlap(string a, string b){
 //////////////////////////////////
 
 /// hash function
-Hash get_hash(const vector<ll>& vec){
+Hash get_hash(const vector<long long>& vec){
     Hash hash;
     for(auto x : vec){
         hash.h1 = (hash.h1 * B1 + mod_norm(x, MOD1)) % MOD1;
@@ -99,22 +106,20 @@ Hash get_hash(const vector<ll>& vec){
 
 template<long long MOD=1000000009>
 struct RollingDequeHash {
-    using ll = long long;
+    long long base;
+    long long inv_base;
+    vector<long long> pow_base;
 
-    ll base;
-    ll inv_base;
-    vector<ll> pow_base;
+    deque<long long> dq;
+    long long h = 0;
 
-    deque<ll> dq;
-    ll h = 0;
-
-    RollingDequeHash(ll base_) : base(base_) {
+    RollingDequeHash(long long base_) : base(base_) {
         inv_base = modinv(base, MOD);
         pow_base.push_back(1);
     }
 
-    static ll modpow(ll a, ll e) {
-        ll r = 1;
+    static long long modpow(long long a, long long e) {
+        long long r = 1;
         while (e > 0) {
             if (e & 1) r = r * a % MOD;
             a = a * a % MOD;
@@ -123,7 +128,7 @@ struct RollingDequeHash {
         return r;
     }
 
-    static ll modinv(ll a, ll mod) {
+    static long long modinv(long long a, long long mod) {
         // MOD が素数なら Fermat でOK
         return modpow(a, mod - 2);
     }
@@ -142,11 +147,11 @@ struct RollingDequeHash {
         return dq.empty();
     }
 
-    ll get() const {
+    long long get() const {
         return h;
     }
 
-    void push_back(ll x) {
+    void push_back(long long x) {
         // x は 1 以上推奨
         x %= MOD;
         h = (h * base + x) % MOD;
@@ -154,7 +159,7 @@ struct RollingDequeHash {
         ensure_pow(size());
     }
 
-    void push_front(ll x) {
+    void push_front(long long x) {
         // x は 1 以上推奨
         x %= MOD;
         ensure_pow(size());
@@ -163,8 +168,8 @@ struct RollingDequeHash {
         ensure_pow(size());
     }
 
-    ll pop_back() {
-        ll x = dq.back();
+    long long pop_back() {
+        long long x = dq.back();
         dq.pop_back();
 
         h = (h - x) % MOD;
@@ -174,8 +179,8 @@ struct RollingDequeHash {
         return x;
     }
 
-    ll pop_front() {
-        ll x = dq.front();
+    long long pop_front() {
+        long long x = dq.front();
         dq.pop_front();
 
         ensure_pow(size());
@@ -190,5 +195,5 @@ struct RollingDequeHash {
     }
 };
 
-// const ll BASE = 911382323;
+// const long long BASE = 911382323;
 // RollingDequeHash hash(BASE);

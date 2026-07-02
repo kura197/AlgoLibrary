@@ -24,7 +24,7 @@
 
 template<class S, S (*op)(S, S), S (*init)(), class F, S (*mapping)(F, S), F (*composition)(F, F), F (*id)()>
 class LazySegmentTree{
-    ll n;
+    long long n;
     vector<S> node;
     vector<F> lazy;
     vector<bool> lazyFlag;
@@ -109,13 +109,13 @@ public:
 };
 
 struct S {
-    ll x;
-    ll y;
+    long long x;
+    long long y;
 };
 
 /// 例
 S op(S lhs, S rhs){
-    ll val = lhs.x * ten[rhs.y] + rhs.x;
+    long long val = lhs.x * ten[rhs.y] + rhs.x;
     val %= MOD;
     return S{val, lhs.y + rhs.y};
 }
@@ -128,7 +128,7 @@ using F = long long;
 
 S mapping(F x, S s){
     if(x == 0) return s;
-    ll val = x * one[s.y];
+    long long val = x * one[s.y];
     val %= MOD;
     return S{val, s.y};
 }
@@ -151,14 +151,14 @@ LazySegmentTree<S, op, init, F, mapping, composition, id> stree(vec);
 //// TODO: 区間overwrite
 
 ///  初期値,関数指定
-template<ll init, ll (*op)(ll, ll)>
+template<long long init, long long (*op)(long long, long long)>
 class LazySegmentTree{
-    ll n;
-    vector<ll> node, lazy;
+    long long n;
+    vector<long long> node, lazy;
     vector<bool> lazyFlag;
 
 public:
-    LazySegmentTree(vector<ll> v){
+    LazySegmentTree(vector<long long> v){
         int size = v.size();
         n = 1;
         while(n < size) n *= 2;
@@ -192,7 +192,7 @@ public:
     }
 
     // 区間更新
-    void update(int a, int b, ll x, int k=0, int l=0, int r=-1){
+    void update(int a, int b, long long x, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
 
         eval(k, l, r);
@@ -221,7 +221,7 @@ public:
     }
 
     //call get_val(a, b);
-    ll get_val(int a, int b, int k=0, int l=0, int r=-1){
+    long long get_val(int a, int b, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
 
         if(b <= l || r <= a) return init;
@@ -230,18 +230,18 @@ public:
 
         if(a <= l && r <= b) return node[k];
 
-        ll vl = get_val(a, b, 2*k+1, l, (l+r)/2);
-        ll vr = get_val(a, b, 2*k+2, (l+r)/2, r);
+        long long vl = get_val(a, b, 2*k+1, l, (l+r)/2);
+        long long vr = get_val(a, b, 2*k+2, (l+r)/2, r);
         return op(vl, vr);
     }
 };
 
 /// 例
-ll my_max(ll x, ll y){
+long long my_max(long long x, long long y){
     return max(x, y);
 }
 
-ll my_sum(ll x, ll y){
+long long my_sum(long long x, long long y){
     return x + y;
 }
 

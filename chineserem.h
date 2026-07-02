@@ -1,5 +1,11 @@
 #pragma once
 
+#include <cassert>
+#include <utility>
+#include <vector>
+
+using namespace std;
+
 //// Reference : https://qiita.com/drken/items/ae02240cd1f8edfc86fd
 
 
@@ -24,7 +30,7 @@ inline long long mod(long long a, long long m) {
 //
 // (x >= 0となる解)
 // x = mod(p, b/d);
-// ll k = (p-x) / (b/d);
+// long long k = (p-x) / (b/d);
 // y = q - k * (a/d);
 long long extGcd(long long a, long long b, long long &p, long long &q) {  
     if (b == 0) { p = 1; q = 0; return a; }  

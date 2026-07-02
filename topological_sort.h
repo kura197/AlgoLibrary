@@ -1,5 +1,11 @@
 #pragma once
 
+#include <queue>
+#include <utility>
+#include <vector>
+
+using namespace std;
+
 // トポロジカルソート O(|V| + |E|)
 // return {topological sorted vertex array, vertex to topological idx}
 // DAG でない場合、topo.size() < V になる。

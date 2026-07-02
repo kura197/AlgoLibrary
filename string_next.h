@@ -1,5 +1,10 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
 // res[i][c] := i 文字目以降で最初に文字 c が登場する index
 // 存在しないときは N
 vector<vector<int> > calc_next(const string &S) {

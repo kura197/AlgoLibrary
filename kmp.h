@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+using namespace std;
+
 /// KMP法
 /// strからwordとマッチするidxを返す。 O(n)
 /// まだ理解していない

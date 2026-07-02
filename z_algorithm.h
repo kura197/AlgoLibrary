@@ -1,5 +1,10 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
 
 //Zアルゴリズム O(N)
 //sの最長共通接頭辞を求める。(ABC141E)

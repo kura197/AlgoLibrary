@@ -1,5 +1,12 @@
 #pragma once
 
+#include <algorithm>
+#include <vector>
+
+#include "lca.h"
+
+using namespace std;
+
 /*
     Auxiliary Tree / Virtual Tree
 

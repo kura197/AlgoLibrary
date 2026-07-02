@@ -2,6 +2,8 @@
 
 #include <vector>
 
+using namespace std;
+
 class UnionFind{
     public:
         vector<int> par;

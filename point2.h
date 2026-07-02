@@ -1,5 +1,12 @@
 #pragma once
 
+#include <algorithm>
+#include <cmath>
+#include <numeric>
+#include <vector>
+
+using namespace std;
+
 // check by tenkei-009: https://atcoder.jp/contests/typical90/submissions/76743434
 
 struct point {

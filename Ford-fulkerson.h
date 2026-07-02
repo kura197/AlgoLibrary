@@ -1,5 +1,12 @@
 #pragma once
 
+#include <algorithm>
+#include <climits>
+#include <cstring>
+#include <vector>
+
+using namespace std;
+
 //最大流    O(Ef), f:最大フロー
 
 const int MAX_V = 101000;

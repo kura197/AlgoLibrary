@@ -3,27 +3,27 @@
 #include <vector>
 
 ////  初期値,関数指定
-template<ll init, ll (*op)(ll, ll)>
+template<long long init, long long (*op)(long long, long long)>
 class SegmentTree{
-    ll n;
-    vector<ll> node;
+    long long n;
+    vector<long long> node;
 
 public:
-    SegmentTree(vector<ll> v){ 
-        ll size = v.size();
+    SegmentTree(vector<long long> v){ 
+        long long size = v.size();
         n = 1;
         while(n < size) n *= 2;
         node.resize(2*n-1, init);
 
-        for(ll i = 0; i < size; i++){
+        for(long long i = 0; i < size; i++){
             node[n-1+i] = v[i];
         }
-        for(ll i = n-2; i >= 0; i--){
+        for(long long i = n-2; i >= 0; i--){
             node[i] = op(node[2*i+1], node[2*i+2]);
         }
     }
 
-    void overwrite(ll idx, ll val){
+    void overwrite(long long idx, long long val){
         idx += n-1;
         node[idx] = val;
         while(idx > 0){
@@ -32,7 +32,7 @@ public:
         }
     }
 
-    void update(ll idx, ll val){
+    void update(long long idx, long long val){
         idx += n-1;
         node[idx] = op(node[idx], val);
         while(idx > 0){
@@ -43,25 +43,25 @@ public:
 
     //return {max, min, ...} value within [a,b)
     //call get_val(a, b);
-    ll get_val(ll a, ll b, ll k=0, ll l=0, ll r=-1){
+    long long get_val(long long a, long long b, long long k=0, long long l=0, long long r=-1){
         if(r < 0) r = n;
 
         if(b <= l || r <= a) return init;
 
         if(a <= l && r <= b) return node[k];
 
-        ll vl = get_val(a, b, 2*k+1, l, (l+r)/2);
-        ll vr = get_val(a, b, 2*k+2, (l+r)/2, r);
+        long long vl = get_val(a, b, 2*k+1, l, (l+r)/2);
+        long long vr = get_val(a, b, 2*k+2, (l+r)/2, r);
         return op(vl, vr);
     }
 };
 
 /// 例
-ll my_max(ll x, ll y){
+long long my_max(long long x, long long y){
     return max(x, y);
 }
 
-ll my_sum(ll x, ll y){
+long long my_sum(long long x, long long y){
     return x + y;
 }
 
@@ -107,7 +107,7 @@ auto val = seg.prod(left, right);   /// [left, right)
 auto x = seg.get(1);
 
 auto tmp = seg.max_right<f_right>(table[x]);
-ll ans = (tmp == cnt-1) ? -1 : rev_table[tmp];
+long long ans = (tmp == cnt-1) ? -1 : rev_table[tmp];
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -169,8 +169,8 @@ public:
 const int K = 9;
  
 struct S{
-    ll val;
-    array<ll, K> mi;
+    long long val;
+    array<long long, K> mi;
 };
  
 S init(){

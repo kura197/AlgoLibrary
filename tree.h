@@ -1,5 +1,13 @@
 #pragma once
 
+#include <algorithm>
+#include <queue>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+using namespace std;
+
 //// 木の重心を求める (参考: https://qiita.com/drken/items/4b4c3f1824339b090202)
 //// 要確認
 

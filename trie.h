@@ -1,5 +1,10 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
 //// Trie木 Reference : https://algo-logic.info/trie-tree/
 //// AGC 047B "First Second"
 //// Trie<26,'a'>

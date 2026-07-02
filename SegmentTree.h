@@ -2,27 +2,27 @@
 
 #include <vector>
 
-const ll INF = 10000000;
+const long long INF = 10000000;
 class SegmentTree{
-    ll n;
-    vector<ll> node;
+    long long n;
+    vector<long long> node;
 
 public:
-    SegmentTree(vector<ll> v){ 
-        ll size = v.size();
+    SegmentTree(vector<long long> v){ 
+        long long size = v.size();
         n = 1;
         while(n < size) n *= 2;
         node.resize(2*n-1, INF);
 
-        for(ll i = 0; i < size; i++){
+        for(long long i = 0; i < size; i++){
             node[n-1+i] = v[i];
         }
-        for(ll i = n-2; i >= 0; i--){
+        for(long long i = n-2; i >= 0; i--){
             node[i] = min(node[2*i+1], node[2*i+2]);
         }
     }
 
-    void update(ll idx, ll val){
+    void update(long long idx, long long val){
         idx += n-1;
         node[idx] = val;
         while(idx > 0){
@@ -34,15 +34,15 @@ public:
     //return min value within [a,b)
     //call get_min(a, b);
     // 0-index ??
-    ll get_min(ll a, ll b, ll k=0, ll l=0, ll r=-1){
+    long long get_min(long long a, long long b, long long k=0, long long l=0, long long r=-1){
         if(r < 0) r = n;
 
         if(b <= l || r <= a) return INF;
 
         if(a <= l && r <= b) return node[k];
 
-        ll vl = get_min(a, b, 2*k+1, l, (l+r)/2);
-        ll vr = get_min(a, b, 2*k+2, (l+r)/2, r);
+        long long vl = get_min(a, b, 2*k+1, l, (l+r)/2);
+        long long vr = get_min(a, b, 2*k+2, (l+r)/2, r);
         return min(vl, vr);
     }
 };
@@ -51,11 +51,11 @@ public:
 // 遅延評価
 class LazySegmentTree{
     int n;
-    vector<ll> node, lazy;
+    vector<long long> node, lazy;
     vector<bool> lazyFlag;
 
 public:
-    LazySegmentTree(vector<ll> v){
+    LazySegmentTree(vector<long long> v){
         int size = v.size();
         n = 1;
         while(n < size) n *= 2;
@@ -87,7 +87,7 @@ public:
     }
 
     // 区間更新
-    void update(int a, int b, ll x, int k=0, int l=0, int r=-1){
+    void update(int a, int b, long long x, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
 
         eval(k, l, r);
@@ -117,7 +117,7 @@ public:
 
     //return min value within [a,b)
     //call get_min(a, b);
-    ll get_min(int a, int b, int k=0, int l=0, int r=-1){
+    long long get_min(int a, int b, int k=0, int l=0, int r=-1){
         if(r < 0) r = n;
 
         if(b <= l || r <= a) return INF;

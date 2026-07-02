@@ -14,7 +14,7 @@
 int main(){
     auto RG = atcoder::convolution<MOD>(r, g);
     auto RGB = atcoder::convolution<MOD>(RG, b);
-    ll ans = RGB[K];
+    long long ans = RGB[K];
 }
 
 
@@ -44,7 +44,7 @@ int main(){
 
 using Complex = complex<double>;
 
-vector<Complex> dft(const vector<Complex>& A, ll n, int sgn = 1){
+vector<Complex> dft(const vector<Complex>& A, long long n, int sgn = 1){
     if(n == 1) return A;
 
     vector<Complex> F(n/2), G(n/2);
@@ -67,7 +67,7 @@ vector<Complex> dft(const vector<Complex>& A, ll n, int sgn = 1){
     return ret;
 }
 
-vector<Complex> inv_dft(const vector<Complex>& A, ll n){
+vector<Complex> inv_dft(const vector<Complex>& A, long long n){
     vector<Complex> ret = dft(A, n, -1);
     for(int i = 0; i < n; i++)
         ret[i] /= n;
@@ -76,7 +76,7 @@ vector<Complex> inv_dft(const vector<Complex>& A, ll n){
 
 vector<Complex> convolution(vector<Complex> A, vector<Complex> B){
     int sz = A.size() + B.size() + 1;
-    ll n = 1;
+    long long n = 1;
     while(n < sz) n *= 2;
 
     A.resize(n), B.resize(n);
@@ -94,12 +94,12 @@ vector<Complex> convolution(vector<Complex> A, vector<Complex> B){
 
 //// Example
 int main(){
-    ll N;
+    long long N;
     cin >> N;
     vector<Complex> A(N+1), B(N+1);
     A[0] = B[0] = 0;
     REP(i,N){
-        ll a, b;
+        long long a, b;
         cin >> a >> b;
         A[i+1] = Complex(a);
         B[i+1] = Complex(b);
@@ -107,6 +107,6 @@ int main(){
 
     auto F = convolution(A, B);
     for(int i = 1; i <= 2*N; i++){
-        cout << (ll)(F[i].real() + 0.5) << endl;
+        cout << (long long)(F[i].real() + 0.5) << endl;
     }
 }

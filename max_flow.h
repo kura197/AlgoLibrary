@@ -5,15 +5,15 @@
 //// 蟻本 p.194
 //// https://atcoder.jp/contests/typical90/tasks/typical90_by
 
-const ll INF = 1LL << 60;
+const long long INF = 1LL << 60;
 const int MAX_V = 200010;
 
 //// {行き先, 容量, 逆辺}
-using Edge = tuple<int, ll, int>;
+using Edge = tuple<int, long long, int>;
 vector<Edge> G[MAX_V];
 
 //// G に辺と逆辺を追加
-void add_edge(int from, int to, ll cap){
+void add_edge(int from, int to, long long cap){
     G[from].push_back(Edge(to, cap, G[to].size()));
     G[to].push_back(Edge(from, 0, G[from].size()-1));
 }
@@ -36,7 +36,7 @@ void bfs(int s, vector<int>& level){
 }
 
 /// 増加パスをDFSで探索
-ll dfs(int v, int t, ll f, vector<int>& iter, vector<int>& level){
+long long dfs(int v, int t, long long f, vector<int>& iter, vector<int>& level){
     if(v == t) return f;
     for(int &i = iter[v]; i < (int)G[v].size(); i++){
         auto &[to, cap, rev] = G[v][i];
@@ -53,14 +53,14 @@ ll dfs(int v, int t, ll f, vector<int>& iter, vector<int>& level){
 }
 
 //// sからtへの最大流を求める
-ll max_flow(int s, int t){
-    ll flow = 0;
+long long max_flow(int s, int t){
+    long long flow = 0;
     while(true){
         vector<int> level(MAX_V, -1); /// sからの距離
         bfs(s, level);
         if(level[t] < 0) return flow;
         vector<int> iter(MAX_V, 0); /// どこまで調べ終わったか
-        ll f;
+        long long f;
         while((f = dfs(s, t, INF, iter, level)) > 0){
             flow += f;
         }
@@ -73,23 +73,23 @@ ll max_flow(int s, int t){
 //// 蟻本p.190
 //// https://atcoder.jp/contests/practice2/tasks/practice2_d
 
-const ll INF = 1LL << 60;
+const long long INF = 1LL << 60;
 const int MAX_V = 100100;
 
 //// {行き先, 容量, 逆辺}
 //// {to, cap, rev}
 //// G[v][to] <-> G[to][rev]
-using Edge = tuple<int, ll, int>;
+using Edge = tuple<int, long long, int>;
 vector<Edge> G[MAX_V];
 
 //// G に辺と逆辺を追加
-void add_edge(int from, int to, ll cap){
+void add_edge(int from, int to, long long cap){
     G[from].push_back(Edge(to, cap, G[to].size()));
     G[to].push_back(Edge(from, 0, G[from].size()-1));
 }
 
 //// 増加パスをdfsで探索
-ll find_path(int v, int t, ll f, vector<bool>& used){
+long long find_path(int v, int t, long long f, vector<bool>& used){
     if(v == t) return f;
     used[v] = true;
     for(auto& [to, cap, rev] : G[v]){
@@ -106,8 +106,8 @@ ll find_path(int v, int t, ll f, vector<bool>& used){
 }
 
 //// sからtへの最大流を求める
-ll max_flow(int s, int t){
-    ll flow = 0;
+long long max_flow(int s, int t){
+    long long flow = 0;
     while(1){
         vector<bool> used(MAX_V, false);
         auto f = find_path(s, t, INF, used);

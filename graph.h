@@ -19,9 +19,18 @@ struct Graph {
         adj[from].push_back({to, cost});
     }
 
+    void add_directed_edge(int from, int to) {
+        add_directed_edge(from, to, 1);
+    }
+
     void add_edge(int u, int v, long long cost) {
         adj[u].push_back({v, cost});
         adj[v].push_back({u, cost});
+    }
+
+    void add_edge(int u, int v) {
+        adj[u].push_back({v, 1});
+        adj[v].push_back({u, 1});
     }
 
     std::vector<Edge>& operator[](int v) {

@@ -2,87 +2,97 @@
 
 #include <algorithm>
 #include <queue>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include "graph.h"
+
 using namespace std;
 
-//// 木の重心を求める (参考: https://qiita.com/drken/items/4b4c3f1824339b090202)
-//// 要確認
+namespace internal_tree {
 
-void sub_get_centroids(int v, int par, int N, vector<int>& size_subtree, vector<int>& centroids) {
-    size_subtree[v] = 1;
+void dfs_centroids(const Graph& tree,
+                   int v,
+                   int parent,
+                   vector<int>& subtree_size,
+                   vector<int>& centroids) {
+    int vertex_count = tree.size();
+    subtree_size[v] = 1;
     bool is_centroid = true;
-    for(auto nv : G[v]){
-        if(nv == par) continue;
-        sub_get_centroids(nv, v, N, size_subtree, centroids);
-        if(size_subtree[nv] > N/2) is_centroid = false;
-        size_subtree[v] += size_subtree[nv];
+
+    for (const auto& [to, cost] : tree[v]) {
+        (void)cost;
+        if (to == parent) continue;
+        dfs_centroids(tree, to, v, subtree_size, centroids);
+        if (subtree_size[to] > vertex_count / 2) is_centroid = false;
+        subtree_size[v] += subtree_size[to];
     }
-    if(N - size_subtree[v] > N/2) is_centroid = false;
-    if(is_centroid) centroids.push_back(v);
+
+    if (vertex_count - subtree_size[v] > vertex_count / 2) is_centroid = false;
+    if (is_centroid) centroids.push_back(v);
 }
 
-vector<int> get_centroids(int N){
+pair<vector<int>, vector<int>> bfs_tree(const Graph& tree, int start) {
+    int vertex_count = tree.size();
+    vector<int> dist(vertex_count, -1);
+    vector<int> parent(vertex_count, -1);
+    queue<int> que;
+
+    dist[start] = 0;
+    que.push(start);
+
+    while (!que.empty()) {
+        int v = que.front();
+        que.pop();
+        for (const auto& [to, cost] : tree[v]) {
+            (void)cost;
+            if (dist[to] != -1) continue;
+            dist[to] = dist[v] + 1;
+            parent[to] = v;
+            que.push(to);
+        }
+    }
+
+    return {dist, parent};
+}
+
+}  // namespace internal_tree
+
+// 木の重心を求める. 非重み木として扱う.
+vector<int> get_centroids(const Graph& tree) {
     vector<int> centroids;
-    vector<int> size_subtree(N);
-    sub_get_centroids(0, -1, N, size_subtree, centroids);
+    if (tree.size() == 0) return centroids;
+
+    vector<int> subtree_size(tree.size(), 0);
+    internal_tree::dfs_centroids(tree, 0, -1, subtree_size, centroids);
     return centroids;
 }
 
+// 木の直径と中心を求める. 非重み木として扱う.
+// return {diameter, center vertex indices (1 or 2)}
+pair<int, vector<int>> get_tree_center(const Graph& tree) {
+    if (tree.size() == 0) return {0, {}};
 
+    auto [dist0, parent0] = internal_tree::bfs_tree(tree, 0);
+    (void)parent0;
+    int v0 = max_element(dist0.begin(), dist0.end()) - dist0.begin();
 
-////////////////////////////
-////////////////////////////
+    auto [dist1, parent1] = internal_tree::bfs_tree(tree, v0);
+    int v1 = max_element(dist1.begin(), dist1.end()) - dist1.begin();
+    int diameter = dist1[v1];
 
-/// 木の直径と, 中心を求める.
-/// 直径が奇数の場合、中心を挟む2点を返す
-/// 参照: https://atcoder.jp/contests/abc221/submissions/28223133
-
-//// return {diameter, center vertex indices (1 or 2)}
-pair<int, vector<int>> get_tree_center(int N){
-    //// get vertex distances
-    auto get_distant_vertex = [&](int v){
-        vector<int> dist(N);
-        auto dfs = [&](auto&& self, int v, int p, int d) -> void {
-            dist[v] = d;
-            for(auto& nv : G[v]){
-                if(nv == p) continue;
-                self(self, nv, v, d+1);
-            }
-        };
-        dfs(dfs, v, -1, 0);
-        return dist;
-    };
-
-    //// dist[v0][v1] = diameter
-    auto d0 = get_distant_vertex(0);
-    int v0 = max_element(d0.begin(), d0.end()) - d0.begin();
-    auto d1 = get_distant_vertex(v0);
-    int v1 = max_element(d1.begin(), d1.end()) - d1.begin();
-    int diameter = *max_element(d1.begin(), d1.end());
-
-    vector<int> centers;
-    unordered_map<int, int> dist_path;
-    ///// get distance of vertex on path(v0, v1) 
-    auto traverse = [&](auto&& self, int v, int p, int d, int target) -> bool {
-        bool path = (v == target);
-        for(auto& nv : G[v]){
-            if(nv == p) continue;
-            path = path || self(self, nv, v, d+1, target);
-        }
-        if(path) dist_path[d] = v;
-        return path;
-    };
-    traverse(traverse, v1, -1, 0, v0);
-
-    if(diameter % 2){
-        centers.push_back(dist_path[(diameter-1)/2]);
-        centers.push_back(dist_path[(diameter+1)/2]);
-    } else {
-        centers.push_back(dist_path[diameter/2]);
+    vector<int> path;
+    for (int v = v1; v != -1; v = parent1[v]) {
+        path.push_back(v);
     }
 
-    return make_pair(diameter, centers);
+    vector<int> centers;
+    if (diameter % 2 == 0) {
+        centers.push_back(path[diameter / 2]);
+    } else {
+        centers.push_back(path[diameter / 2]);
+        centers.push_back(path[diameter / 2 + 1]);
+    }
+
+    return {diameter, centers};
 }

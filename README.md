@@ -31,6 +31,7 @@
 - `suffix_lcp.h`
 - `topological_sort.h`
 - `tree.h`
+- `trace.h`
 - `trie.h`
 - `warshall_floyd.h`
 - `z_algorithm.h`

@@ -98,7 +98,7 @@ int main(){
     cin >> N;
     vector<Complex> A(N+1), B(N+1);
     A[0] = B[0] = 0;
-    REP(i,N){
+    for (int i = 0; i < N; i++) {
         long long a, b;
         cin >> a >> b;
         A[i+1] = Complex(a);

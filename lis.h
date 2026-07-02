@@ -11,8 +11,9 @@ using namespace std;
 /// get length of longest increasing subsequence of vector A
 int get_lis_length(vector<long long>& A){
     const long long INF = 1e15;
+    int N = (int)A.size();
     vector<long long> dp(N, INF);
-    REP(i,N){
+    for (int i = 0; i < N; i++) {
         auto a = A[i];
         //// 狭義増加部分列の場合: <- 要確認
         //// auto iter = lower_bound(dp.begin(), dp.end(), a);

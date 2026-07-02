@@ -64,7 +64,7 @@ pair<double, double> get_center(const vector<pair<double, double>>& X){
     }
     gx /= X.size();
     gy /= X.size();
-    return mp(gx, gy);
+    return make_pair((double)gx, (double)gy);
 }
 
 //// 点centerを中心に、aとbのなす角を返す. thetaは符号に注意?

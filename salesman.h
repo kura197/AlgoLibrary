@@ -29,8 +29,8 @@ long long rec(long long S, long long v){
 }
 
 // in main
-REP(i, 1<<MAX_N){
-    REP(j,MAX_N){
+for (int i = 0; i < (1 << MAX_N); i++) {
+    for (int j = 0; j < MAX_N; j++) {
         DP[i][j] = -1;
     }
 }

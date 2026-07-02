@@ -23,7 +23,7 @@ int hakidashi(vector<vector<int>>& mat){
         bool found = false;
 
         /// find 1
-        REPi(i, row, N){
+        for (int i = row; i < N; i++) {
             if(mat[i][j]){
                 swap(mat[row], mat[i]);
                 found = true;
@@ -34,9 +34,9 @@ int hakidashi(vector<vector<int>>& mat){
         if(!found) continue;
 
         /// update row+k (k > 0)
-        REPi(i, row+1, N){
+        for (int i = row + 1; i < N; i++) {
             if(mat[i][j]){
-                REP(k, M){
+                for (int k = 0; k < M; k++) {
                     mat[i][k] ^= mat[row][k];
                 }
             }

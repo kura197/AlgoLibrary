@@ -15,10 +15,10 @@ int main() {
     for(auto& idx1 : empty){
         min_cost.add_edge(idx1, sink, 1, 0);
     }
-    REP(i,N-1){
+    for (int i = 0; i < N - 1; i++) {
         min_cost.add_edge(i, i+1, N, 1);
     }
-    REPi(i,1,N){
+    for (int i = 1; i < N; i++) {
         min_cost.add_edge(i, i-1, N, 1);
     }
     auto [cap, cost] = min_cost.flow(src, sink, F);

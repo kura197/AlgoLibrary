@@ -176,7 +176,7 @@ struct S{
 S init(){
     S z;
     z.val = INF;
-    REP(i,K) z.mi[i] = INF;
+    for (int i = 0; i < K; i++) z.mi[i] = INF;
     return z;
 }
  
@@ -184,7 +184,7 @@ S init(){
 S my_min(S x, S y){
     S z = init();
     z.val = min(x.val, y.val);
-    REP(k,K){
+    for (int k = 0; k < K; k++) {
         chmin(z.val, x.mi[k] + y.mi[k]);
         chmin(z.mi[k], min(x.mi[k], y.mi[k]));
     }

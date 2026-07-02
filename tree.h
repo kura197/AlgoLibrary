@@ -70,7 +70,7 @@ pair<int, vector<int>> get_tree_center(int N){
         bool path = (v == target);
         for(auto& nv : G[v]){
             if(nv == p) continue;
-            chmax(path, self(self, nv, v, d+1, target));
+            path = path || self(self, nv, v, d+1, target);
         }
         if(path) dist_path[d] = v;
         return path;

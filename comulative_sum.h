@@ -17,8 +17,8 @@ struct CumulativeSum{
         int col = array[0].size();
         sum.resize(row, vector<T>(col, 0));
 
-        REP(i,row){
-            REP(j,col){
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
                 sum[i][j] = array[i][j];
                 if(i > 0)
                     sum[i][j] += sum[i-1][j];

@@ -11,6 +11,10 @@ struct Graph {
     Graph() = default;
     Graph(int vertex_count) : adj(vertex_count) {}
 
+    void set_vertex_count(int vertex_count) {
+        adj.resize(vertex_count);
+    }
+
     int size() const {
         return (int)adj.size();
     }

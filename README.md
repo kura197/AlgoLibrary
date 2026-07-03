@@ -23,11 +23,13 @@
 - `lca.h`
 - `lcs.h`
 - `lis.h`
+- `lazy_segtree_alias.h`
 - `mat.h`
 - `mst.h`
 - `point2.h`
 - `point3.h`
 - `prime.h`
+- `segtree_alias.h`
 - `sieve.h`
 - `string_next.h`
 - `suffix_lcp.h`

@@ -36,3 +36,17 @@ std::map<long long, int> prime_factor(long long n){
     if(n != 1) res[n]++;
     return res;
 }
+
+// オイラーのトーシェント関数 phi(n) を計算する O(sqrt(n))
+// 1 以上 n 以下の整数のうち、n と互いに素なものの個数を返す
+long long totient(long long n) {
+    long long ret = n;
+    for (long long p = 2; p * p <= n; p++) {
+        if (n % p == 0) {
+            ret -= ret / p;
+            while (n % p == 0) n /= p;
+        }
+    }
+    if (n != 1) ret -= ret / n;
+    return ret;
+}

@@ -9,7 +9,7 @@
 - `chineserem.h`
 - `combination.h`
 - `comulative_sum.h`
-- `coord_compression.h`
+- `compression.h`
 - `deduplicate.h`
 - `dijkstra.h`
 - `edge.h`

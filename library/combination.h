@@ -5,7 +5,7 @@
 
 // MODありの場合 (ACL)
 // 構築 O(size), comb/perm O(1)
-template<int MOD = 1000000007>
+template<int MOD>
 struct Combination {
     using mint = atcoder::static_modint<MOD>;
 

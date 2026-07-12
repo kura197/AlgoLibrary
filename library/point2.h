@@ -37,11 +37,16 @@ long long dot(const point &a, const point &b) {
     return (long long) a.x * b.x + (long long) a.y * b.y;
 }
 
-// 偏角順ソート用に、半平面と外積で2点の順序を比較する
+// 原点から見た偏角順で a, b を比較する
+// まず x 軸の負側をまたぐかどうかで半平面を分け、
+// 同じ半平面内では外積の符号で反時計回り順を判定する
 bool cmp(const point &a, const point &b) {
+    // 下半平面、または x 軸負側を 1 とする
     int ah = (a.y < 0 or (a.y == 0 and a.x < 0));
     int bh = (b.y < 0 or (b.y == 0 and b.x < 0));
+    // 上半平面を先に並べる
     if (ah != bh) return ah < bh;
+    // 同じ半平面内では、a から b が反時計回りなら a を先にする
     return cross(a, b) > 0;
 }
 

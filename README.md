@@ -29,6 +29,7 @@
 - `point2.h`
 - `point3.h`
 - `prime.h`
+-  rerooting.h
 - `segtree_alias.h`
 - `sieve.h`
 - `string_next.h`

@@ -1,11 +1,13 @@
 #pragma once
 
+#include <cassert>
 #include <map>
 #include <vector>
 
 // エラトステネスの篩
 // 構築 O(n log log n), 素因数分解 O(log n), 約数列挙 O(約数個数)
 struct Sieve {
+    int built_n = -1;
     // primes[i] := i番目の素数
     std::vector<int> primes;
     // is_prime[x] := xが素数かどうか
@@ -25,6 +27,7 @@ struct Sieve {
 
     // n以下について素数情報を前計算する O(n log log n)
     void build(int n) {
+        built_n = n;
         primes.clear();
         is_prime.assign(n + 1, true);
         min_prime.assign(n + 1, -1);
@@ -59,6 +62,44 @@ struct Sieve {
             n /= min_prime[n];
         }
         return res;
+    }
+
+    // 区間 [left, right] の各整数をまとめて素因数分解する
+    // sqrt(right) <= built_n を仮定する
+    // 計算量: O((right - left + 1) log log right + 区間内で実際に割る回数)
+    std::vector<std::map<long long, int>> prime_factors(long long left, long long right) const {
+        assert(1 <= left && left <= right);
+        assert(0 <= built_n);
+        assert((long long)built_n * built_n >= right);
+
+        int length = (int)(right - left + 1);
+        std::vector<long long> values(length);
+        std::vector<std::map<long long, int>> factors(length);
+        for (int i = 0; i < length; i++) {
+            values[i] = left + i;
+        }
+
+        for (int p : primes) {
+            long long prime = p;
+            if (prime * prime > right) break;
+
+            long long start = (left + prime - 1) / prime * prime;
+            for (long long x = start; x <= right; x += prime) {
+                int index = (int)(x - left);
+                while (values[index] % prime == 0) {
+                    factors[index][prime]++;
+                    values[index] /= prime;
+                }
+            }
+        }
+
+        for (int i = 0; i < length; i++) {
+            if (values[i] > 1) {
+                factors[i][values[i]]++;
+            }
+        }
+
+        return factors;
     }
 
     // 約数を列挙する O(約数個数)

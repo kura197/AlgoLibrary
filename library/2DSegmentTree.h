@@ -1,53 +1,92 @@
 #pragma once
 
-#include <algorithm>
 #include <vector>
 
 using namespace std;
 
-/// 2次元セグメント木
-/// 参考: http://algoogle.hadrori.jp/algorithm/2d-segment-tree.html
-/// https://atcoder.jp/contests/abc228/submissions/me
-/// TODO: 抽象化
+// https://nyaannyaan.github.io/library/data-structure-2d/2d-segment-tree.hpp.html
 
-struct segtree {
-    long long H, W;
-    vector<vector<long long>> dat;
-    segtree(){}
-    segtree(vector<vector<long long>> &f) {
-        H = W = 1;
-        while(H < (long long)f.size()) H <<= 1;
-        while(W < (long long)f[0].size()) W <<= 1;
-        dat.assign(2*H-1,vector<long long>(2*W-1, INF));
-        init(f);
+template <typename T, typename F>
+struct SegmentTree2D {
+ private:
+  int id(int h, int w) const { return h * 2 * W + w; }
+
+ public:
+  int H, W;
+  vector<T> seg;
+  const F f;
+  const T I;
+
+  SegmentTree2D(int h, int w, F _f, const T& i) : f(_f), I(i) { init(h, w); }
+
+  // 高さ h, 幅 w のグリッドを扱えるように内部配列を初期化する
+  // 値はすべて単位元 I で埋める
+  void init(int h, int w) {
+    H = W = 1;
+    while (H < h) H <<= 1;
+    while (W < w) W <<= 1;
+    seg.assign(4 * H * W, I);
+  }
+
+  // build 前の葉に初期値を直接セットする
+  // 複数点をまとめて入れたあとに build() を呼んで木全体を構築する
+  void set(int h, int w, const T& x) { seg[id(h + H, w + W)] = x; }
+
+  // set で入れた葉の値から内部ノードを計算し、木全体を構築する
+  void build() {
+    // w in [W, 2W)
+    for (int w = W; w < 2 * W; w++) {
+      for (int h = H - 1; h; h--) {
+        seg[id(h, w)] = f(seg[id(2 * h + 0, w)], seg[id(2 * h + 1, w)]);
+      }
     }
-
-    void init(vector<vector<long long>> &f) {
-        for (long long i = 0; i < (long long)f.size(); i++)
-            for (long long j = 0; j < (long long)f[0].size(); j++)
-                dat[i+H-1][j+W-1] = f[i][j];
-        for (long long i = 2*H-2; i > H-2; i--)
-            for (long long j = W-2; j >= 0; j--)
-                dat[i][j] = max(dat[i][2*j+1], dat[i][2*j+2]);
-        for (long long i = H-2; i >= 0; i--)
-            for (long long j = 0; j < 2*W-1; j++)
-                dat[i][j] = max(dat[2*i+1][j], dat[2*i+2][j]);
+    // h in [0, 2H)
+    for (int h = 0; h < 2 * H; h++) {
+      for (int w = W - 1; w; w--) {
+        seg[id(h, w)] = f(seg[id(h, 2 * w + 0)], seg[id(h, 2 * w + 1)]);
+      }
     }
+  }
 
-    //// return max of range( y:[li, ri), x:[lj, rj) )
-    long long maximum(long long li, long long lj, long long ri, long long rj) { return maximum_h(li,lj,ri,rj,0,H,0); }
+  T get(int h, int w) const { return seg[id(h + H, w + W)]; }
+  T operator()(int h, int w) const { return seg[id(h + H, w + W)]; }
 
-    long long maximum_h(long long li, long long lj, long long ri, long long rj, long long si, long long ti, long long k) {
-        if(ri <= si or ti <= li) return -INF;
-        if(li <= si and ti <= ri) return maximum_w(lj,rj,0,W,k,0);
-        const long long mi = (si+ti)/2;
-        return max(maximum_h(li,lj,ri,rj,si,mi,2*k+1), maximum_h(li,lj,ri,rj,mi,ti,2*k+2));
+  void update(int h, int w, const T& x) {
+    h += H, w += W;
+    seg[id(h, w)] = x;
+    for (int i = h >> 1; i; i >>= 1) {
+      seg[id(i, w)] = f(seg[id(2 * i + 0, w)], seg[id(2 * i + 1, w)]);
     }
-
-    long long maximum_w(long long lj, long long rj, long long sj, long long tj, long long i, long long k) {
-        if(rj <= sj or tj <= lj) return -INF;
-        if(lj <= sj and tj <= rj) return dat[i][k];
-        const long long mj = (sj+tj)/2;
-        return max(maximum_w(lj,rj,sj,mj,i,2*k+1),maximum_w(lj,rj,mj,tj,i,2*k+2));
+    for (; h; h >>= 1) {
+      for (int j = w >> 1; j; j >>= 1) {
+        seg[id(h, j)] = f(seg[id(h, 2 * j + 0)], seg[id(h, 2 * j + 1)]);
+      }
     }
+  }
+
+  T _inner_query(int h, int w1, int w2) {
+    T res = I;
+    for (; w1 < w2; w1 >>= 1, w2 >>= 1) {
+      if (w1 & 1) res = f(res, seg[id(h, w1)]), w1++;
+      if (w2 & 1) --w2, res = f(res, seg[id(h, w2)]);
+    }
+    return res;
+  }
+
+  // [ (h1,w1), (h2,w2) ) 半開
+  T query(int h1, int w1, int h2, int w2) {
+    if (h1 >= h2 || w1 >= w2) return I;
+    T res = I;
+    h1 += H, h2 += H, w1 += W, w2 += W;
+    for (; h1 < h2; h1 >>= 1, h2 >>= 1) {
+      if (h1 & 1) res = f(res, _inner_query(h1, w1, w2)), h1++;
+      if (h2 & 1) --h2, res = f(res, _inner_query(h2, w1, w2));
+    }
+    return res;
+  }
 };
+
+/**
+ * @brief 二次元セグメント木
+ * @docs docs/data-structure-2d/2d-segment-tree.md
+ */

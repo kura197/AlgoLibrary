@@ -12,6 +12,7 @@
 - `compression.h`
 - `deduplicate.h`
 - `dijkstra.h`
+-  dsu.h
 - `edge.h`
 - `fraction.h`
 - `gcd.h`

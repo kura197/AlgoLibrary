@@ -33,6 +33,7 @@
 - `prime.h`
 -  rerooting.h
 - `segtree_alias.h`
+- `segtree2d.h`
 - `sieve.h`
 - `string_next.h`
 - `suffix_lcp.h`
@@ -45,8 +46,6 @@
 
 ## 未対応
 
-- `2DSegmentTree.h`
-  - 単体 include 不可 (`INF` に依存)
 - `Ford-fulkerson.h`
   - グローバル変数あり (`G`, `used`)
 - `rolling_hash.h`

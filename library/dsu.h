@@ -5,6 +5,10 @@
 
 using namespace std;
 
+// 疎な整数集合に対する predecessor 構造
+// 要素を erase で削除しながら、
+// x 以下でまだ削除されていない最大値を prev(x) / find(x) で取得できる
+// 要素が存在しないときは begin_sentinel() を返す
 class SparsePredecessorDSU {
 private:
     unordered_map<long long, long long> parent;
@@ -49,6 +53,10 @@ public:
     }
 };
 
+// 疎な整数集合に対する successor 構造
+// 要素を erase で削除しながら、
+// x 以上でまだ削除されていない最小値を next(x) で取得できる
+// 要素が存在しないときは end_sentinel() を返す
 class SparseSuccessorDSU {
 private:
     unordered_map<long long, long long> parent;

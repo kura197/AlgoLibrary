@@ -25,6 +25,7 @@
 - `lis.h`
 - `lazy_segtree_alias.h`
 - `mat.h`
+- `math.h`
 - `mst.h`
 - `point2.h`
 - `point3.h`

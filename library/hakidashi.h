@@ -5,17 +5,19 @@
 
 using namespace std;
 
-/// WIP
 /// 掃き出し法 (GF(2))
 /// https://atcoder.jp/contests/typical90/tasks/typical90_be
 
+/// 0/1 行列に対する GF(2) の前進消去を行い、rank を返す
+/// mat 自体も破壊的に更新される
 /// E.g. mat = [[1, 1, 0, 1, 0, ...],
 ///             [1, 0, 1, 1, 1, ...],
 ///             ...,
 ///             [0, 1, 1, 1, 1, ...]]
-/// return rank
+/// 計算量: NxM行列に対して、O(N M min(N, M))
 int hakidashi(vector<vector<int>>& mat){
     int N = mat.size();
+    if (N == 0) return 0;
     int M = mat[0].size();
 
     int row = 0;

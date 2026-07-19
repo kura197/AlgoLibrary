@@ -12,7 +12,7 @@
 - `compression.h`
 - `deduplicate.h`
 - `dijkstra.h`
--  dsu.h
+- `dsu.h`
 - `edge.h`
 - `fraction.h`
 - `gcd.h`
@@ -28,11 +28,12 @@
 - `mat.h`
 - `math.h`
 - `mst.h`
--  nth_accumulater.h
+- `nth_accumulater.h`
 - `point2.h`
 - `point3.h`
 - `prime.h`
--  rerooting.h
+- `randxor.h`
+- `rerooting.h`
 - `segtree_alias.h`
 - `segtree2d.h`
 - `sieve.h`

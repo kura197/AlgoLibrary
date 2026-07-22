@@ -13,6 +13,44 @@ struct point {
     long long x, y;
 };
 
+point operator+(const point& a, const point& b) {
+    return {a.x + b.x, a.y + b.y};
+}
+
+point operator-(const point& a, const point& b) {
+    return {a.x - b.x, a.y - b.y};
+}
+
+point operator-(const point& a) {
+    return {-a.x, -a.y};
+}
+
+point operator*(const point& a, long long k) {
+    return {a.x * k, a.y * k};
+}
+
+point operator*(long long k, const point& a) {
+    return a * k;
+}
+
+point& operator+=(point& a, const point& b) {
+    a.x += b.x;
+    a.y += b.y;
+    return a;
+}
+
+point& operator-=(point& a, const point& b) {
+    a.x -= b.x;
+    a.y -= b.y;
+    return a;
+}
+
+point& operator*=(point& a, long long k) {
+    a.x *= k;
+    a.y *= k;
+    return a;
+}
+
 bool operator<(const point &a, const point &b) {
     if (a.x != b.x) return a.x < b.x;
     return a.y < b.y;

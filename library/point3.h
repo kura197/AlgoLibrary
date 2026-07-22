@@ -1,8 +1,16 @@
 #pragma once
 
+#include <cmath>
+
+using namespace std;
+
 struct point3 {
     long long x, y, z;
 };
+
+point3 operator-(const point3& a) {
+    return {-a.x, -a.y, -a.z};
+}
 
 point3 operator+(const point3& a, const point3& b) {
     return {a.x + b.x, a.y + b.y, a.z + b.z};
@@ -10,6 +18,35 @@ point3 operator+(const point3& a, const point3& b) {
 
 point3 operator-(const point3& a, const point3& b) {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
+}
+
+point3 operator*(const point3& a, long long k) {
+    return {a.x * k, a.y * k, a.z * k};
+}
+
+point3 operator*(long long k, const point3& a) {
+    return a * k;
+}
+
+point3& operator+=(point3& a, const point3& b) {
+    a.x += b.x;
+    a.y += b.y;
+    a.z += b.z;
+    return a;
+}
+
+point3& operator-=(point3& a, const point3& b) {
+    a.x -= b.x;
+    a.y -= b.y;
+    a.z -= b.z;
+    return a;
+}
+
+point3& operator*=(point3& a, long long k) {
+    a.x *= k;
+    a.y *= k;
+    a.z *= k;
+    return a;
 }
 
 // 3次元ベクトルa, bの内積を計算する

@@ -40,14 +40,10 @@ struct LCA {
     // u と v の LCA を求める O(log N)
     int query(int u, int v) const {
         if (depth[u] < depth[v]) std::swap(u, v);
-        int log = (int)parent.size();
-
-        int diff = depth[u] - depth[v];
-        for (int k = 0; k < log; k++) {
-            if ((diff >> k) & 1) u = parent[k][u];
-        }
+        u = kth_parent(u, depth[u] - depth[v]);
 
         if (u == v) return u;
+        int log = (int)parent.size();
         for (int k = log - 1; k >= 0; k--) {
             if (parent[k][u] != parent[k][v]) {
                 u = parent[k][u];
@@ -67,6 +63,22 @@ struct LCA {
     long long get_cost_dist(int u, int v) const {
         int lca = query(u, v);
         return cost_dist[u] + cost_dist[v] - 2 * cost_dist[lca];
+    }
+
+    // v から k 個親側にある頂点を返す O(log N)
+    // 存在しない場合は -1 を返す
+    int kth_parent(int v, int k) const {
+        if (k < 0) return -1;
+        if (v < 0 || v >= (int)depth.size()) return -1;
+        if (depth[v] < k) return -1;
+
+        int log = (int)parent.size();
+        for (int i = 0; i < log; i++) {
+            if ((k >> i) & 1) {
+                v = parent[i][v];
+            }
+        }
+        return v;
     }
 
     // u と v の経路上の辺重み最大値を求める O(log N)

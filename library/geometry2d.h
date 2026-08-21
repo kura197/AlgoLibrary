@@ -1,5 +1,5 @@
-
 #pragma once
+// https://github.com/kura197/AlgoLibrary
 
 #include <cmath>
 #include <complex>

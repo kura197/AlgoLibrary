@@ -1,4 +1,5 @@
 #pragma once
+// https://github.com/kura197/AlgoLibrary
 
 /*
     LCA(G, root): 木 G に対する根を root として Lowest Common Ancestor を求める構造体

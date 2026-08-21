@@ -1,4 +1,5 @@
 #pragma once
+// https://github.com/kura197/AlgoLibrary
 
 #include <vector>
 #include <atcoder/all>

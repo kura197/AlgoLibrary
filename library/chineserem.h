@@ -10,12 +10,10 @@ using namespace std;
 //// Reference : https://qiita.com/drken/items/ae02240cd1f8edfc86fd
 
 
-// 負の数にも対応した mod
-// 例えば -17 を 5 で割った余りは本当は 3 (-17 ≡ 3 (mod. 5))
-// しかし単に -17 % 5 では -2 になってしまう
-inline long long mod(long long a, long long m) {
-    return (a % m + m) % m;
-}
+// 負の数にも対応した mod. defined in main.cpp
+//inline long long mod(long long a, long long m) {
+//    return (a % m + m) % m;
+//}
 
 // 拡張 Euclid の互除法
 // ap + bq = gcd(a, b) となる (p, q) を求め、d = gcd(a, b) をリターンします

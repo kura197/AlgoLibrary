@@ -2,6 +2,7 @@
 // https://github.com/kura197/AlgoLibrary
 
 #include <algorithm>
+#include <cassert>
 #include <deque>
 #include <string>
 #include <vector>
@@ -106,13 +107,29 @@ Hash get_hash(const vector<long long>& vec){
 /////////////////////////////////
 
 template<long long MOD=1000000009>
+struct RollingHashValue {
+    long long hash;
+    int len;
+
+    RollingHashValue(long long hash = 0, int len = 0) : hash(hash), len(len) {}
+
+    bool operator==(const RollingHashValue& other) const {
+        return hash == other.hash && len == other.len;
+    }
+
+    bool operator!=(const RollingHashValue& other) const {
+        return !(*this == other);
+    }
+};
+
+template<long long MOD=1000000009>
 struct RollingDequeHash {
     long long base;
     long long inv_base;
-    vector<long long> pow_base;
+    mutable vector<long long> pow_base;
 
     deque<long long> dq;
-    long long h = 0;
+    RollingHashValue<MOD> value;
 
     RollingDequeHash(long long base_) : base(base_) {
         inv_base = modinv(base, MOD);
@@ -134,37 +151,56 @@ struct RollingDequeHash {
         return modpow(a, mod - 2);
     }
 
-    void ensure_pow(int n) {
+    void ensure_pow(int n) const {
         while ((int)pow_base.size() <= n) {
             pow_base.push_back(pow_base.back() * base % MOD);
         }
     }
 
     int size() const {
-        return dq.size();
+        return value.len;
     }
 
     bool empty() const {
         return dq.empty();
     }
 
-    long long get() const {
-        return h;
+    RollingHashValue<MOD> get() const {
+        return value;
+    }
+
+    long long get_hash() const {
+        return value.hash;
+    }
+
+    RollingHashValue<MOD> concat(const RollingHashValue<MOD>& left, const RollingHashValue<MOD>& right) const {
+        ensure_pow(right.len);
+        return {
+            (left.hash * pow_base[right.len] + right.hash) % MOD,
+            left.len + right.len
+        };
+    }
+
+    RollingHashValue<MOD> concat(const RollingDequeHash& other) const {
+        assert(base == other.base);
+        return concat(value, other.value);
     }
 
     void push_back(long long x) {
         // x は 1 以上推奨
-        x %= MOD;
-        h = (h * base + x) % MOD;
+        x = mod_norm(x, MOD);
+        value.hash = (value.hash * base + x) % MOD;
+        value.len++;
         dq.push_back(x);
         ensure_pow(size());
     }
 
     void push_front(long long x) {
         // x は 1 以上推奨
-        x %= MOD;
+        x = mod_norm(x, MOD);
         ensure_pow(size());
-        h = (x * pow_base[size()] + h) % MOD;
+        value.hash = (x * pow_base[size()] + value.hash) % MOD;
+        value.len++;
         dq.push_front(x);
         ensure_pow(size());
     }
@@ -173,9 +209,10 @@ struct RollingDequeHash {
         long long x = dq.back();
         dq.pop_back();
 
-        h = (h - x) % MOD;
-        if (h < 0) h += MOD;
-        h = h * inv_base % MOD;
+        value.hash = (value.hash - x) % MOD;
+        if (value.hash < 0) value.hash += MOD;
+        value.hash = value.hash * inv_base % MOD;
+        value.len--;
 
         return x;
     }
@@ -184,15 +221,20 @@ struct RollingDequeHash {
         long long x = dq.front();
         dq.pop_front();
 
+        value.len--;
         ensure_pow(size());
-        h = (h - x * pow_base[size()] % MOD) % MOD;
-        if (h < 0) h += MOD;
+        value.hash = (value.hash - x * pow_base[size()] % MOD) % MOD;
+        if (value.hash < 0) value.hash += MOD;
 
         return x;
     }
 
     bool operator==(const RollingDequeHash& other) const {
-        return size() == other.size() && h == other.h;
+        return value == other.value;
+    }
+
+    bool operator!=(const RollingDequeHash& other) const {
+        return !(*this == other);
     }
 };
 

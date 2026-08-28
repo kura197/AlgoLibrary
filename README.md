@@ -27,6 +27,7 @@
 - `lazy_segtree_alias.h`
 - `mat.h`
 - `math.h`
+- `mo.h`
 - `mst.h`
 - `nth_accumulater.h`
 - `point2.h`

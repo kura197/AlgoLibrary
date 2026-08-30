@@ -151,6 +151,44 @@ struct EulerTour {
         return {in[v], out[v]};
     }
 
+    // 頂点 v の部分木に対応する [left, right) を query に渡す。O(1) + query の計算量。
+    // query は vertex_tour と同じ添字で管理されたデータ構造を処理する。
+    template<class F>
+    decltype(auto) subtree_query(int v, F&& query) const {
+        return subtree_node_query(v, std::forward<F>(query));
+    }
+
+    // subtree_query() の、頂点を対象とすることを明示した別名。
+    template<class F>
+    decltype(auto) subtree_node_query(int v, F&& query) const {
+        assert(0 <= v && v < (int)parent.size());
+        return std::forward<F>(query)(in[v], out[v]);
+    }
+
+    // v の部分木内の辺に対応する [left, right) を query に渡す。
+    // 辺 parent[x] -> x の値を in[x] に置く規約で、v へ入る辺は含めない。
+    template<class F>
+    decltype(auto) subtree_edge_query(int v, F&& query) const {
+        assert(0 <= v && v < (int)parent.size());
+        return std::forward<F>(query)(in[v] + 1, out[v]);
+    }
+
+    // 頂点 v に対応する一点区間 [in[v], in[v] + 1) を query に渡す。
+    template<class F>
+    decltype(auto) node_query(int v, F&& query) const {
+        assert(0 <= v && v < (int)parent.size());
+        return std::forward<F>(query)(in[v], in[v] + 1);
+    }
+
+    // 辺 parent[v] -> v に対応する一点区間を query に渡す。
+    // root には入る辺がないため、空区間 [in[root], in[root]) を渡す。
+    template<class F>
+    decltype(auto) edge_query(int v, F&& query) const {
+        assert(0 <= v && v < (int)parent.size());
+        const int right = in[v] + (v == root ? 0 : 1);
+        return std::forward<F>(query)(in[v], right);
+    }
+
     bool is_ancestor(int ancestor, int v) const {
         return in[ancestor] <= in[v] && out[v] <= out[ancestor];
     }

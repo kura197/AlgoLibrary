@@ -1,6 +1,8 @@
 #pragma once
 // https://github.com/kura197/AlgoLibrary
-// Reference: https://info.atcoder.jp/entry/algorithm_lectures/euler_tour_technique
+// References:
+// - https://info.atcoder.jp/entry/algorithm_lectures/euler_tour_technique
+// - https://nyaannyaan.github.io/library/tree/euler-tour.hpp.html
 
 #include <algorithm>
 #include <cassert>
@@ -28,41 +30,28 @@ using LcaSegmentTree = atcoder::segtree<LcaValue, lca_op, lca_e>;
 
 }  // namespace internal_euler_tour
 
-// 根付き木を Euler Tour Technique で使う列に変換する。構築 O(N), 空間 O(N)。
+// 根付き木の各頂点に、入る時刻 down[v] と出る時刻 up[v] を割り当てる。
+// 構築 O(N), 空間 O(N)。入力は連結な木を想定する。
 //
-// 部分木クエリ:
-//   vertex_tour の [in[v], out[v]) が v の部分木に一致する。
+// データ構造は size() 要素確保し、用途に応じて次のように値を置く。
 //
-// 根からの辺パスクエリ:
-//   親から子 v への辺の値 x を edge_in[v] に +x、edge_out[v] に -x と置く。
-//   edge_tour の先頭から edge_in[v] までの総和が root -> v のパスの総和になる。
+// 部分木頂点クエリ:
+//   down[v] に value[v] を置く。部分木 v は [down[v], up[v])。
 //
-// LCA クエリ:
-//   lca(u, v) は walk[first[u] ... first[v]] の深さ最小頂点を RMQ で返す。
+// 頂点パスクエリ（和など逆元を持つ可換演算）:
+//   down[v] に +value[v]、up[v] に -value[v] を置く。
+//   node_query(u, v, f) が u-v パスを表す 2 区間を f に渡す。
+//
+// 辺パスクエリ（和など逆元を持つ可換演算）:
+//   root 以外の v について、辺 parent[v]-v の値を down[v] に正、up[v] に負で置く。
+//   edge_query(u, v, f) が u-v パスを表す 2 区間を f に渡す。
 struct EulerTour {
-    struct DirectedEdge {
-        int from;
-        int to;
-        long long cost;
-    };
-
     int root = -1;
     std::vector<int> parent;
     std::vector<int> depth;
-
-    // 各頂点を初訪問時に一度だけ並べた列 (pre-order)。長さ N。
-    std::vector<int> vertex_tour;
-    std::vector<int> in;
-    std::vector<int> out;
-
-    // 各辺を往路・復路の順に並べた有向辺列。長さ 2(N-1)。
-    std::vector<DirectedEdge> edge_tour;
-    std::vector<int> edge_in;   // parent[v] -> v の位置。root は -1。
-    std::vector<int> edge_out;  // v -> parent[v] の位置。root は -1。
-
-    // DFS 中にいる頂点を、戻りも省略せず並べた列。長さ 2N-1。
-    std::vector<int> walk;
-    std::vector<int> first;
+    std::vector<long long> parent_cost;
+    std::vector<int> down;
+    std::vector<int> up;
 
     EulerTour() = default;
 
@@ -73,24 +62,12 @@ struct EulerTour {
     void init(const Graph& tree, int new_root = 0) {
         const int n = tree.size();
         root = (n == 0 ? -1 : new_root);
-
         parent.assign(n, -2);
         depth.assign(n, -1);
-        in.assign(n, -1);
-        out.assign(n, -1);
-        edge_in.assign(n, -1);
-        edge_out.assign(n, -1);
-        first.assign(n, -1);
-        vertex_tour.clear();
-        edge_tour.clear();
-        walk.clear();
+        parent_cost.assign(n, 0);
+        down.assign(n, -1);
+        up.assign(n, -1);
         lca_rmq = internal_euler_tour::LcaSegmentTree();
-
-        vertex_tour.reserve(n);
-        if (n > 0) {
-            edge_tour.reserve(2 * (n - 1));
-            walk.reserve(2 * n - 1);
-        }
         if (n == 0) return;
 
         assert(0 <= root && root < n);
@@ -102,11 +79,12 @@ struct EulerTour {
 
         std::vector<Frame> stack;
         stack.reserve(n);
-        std::vector<long long> parent_cost(n, 0);
+        std::vector<internal_euler_tour::LcaValue> lca_tour;
+        lca_tour.reserve(2 * n - 1);
 
         parent[root] = -1;
         depth[root] = 0;
-        enter_vertex(root);
+        enter_vertex(root, lca_tour);
         stack.push_back({root, 0});
 
         while (!stack.empty()) {
@@ -118,88 +96,93 @@ struct EulerTour {
                 if (parent[to] != -2) continue;
 
                 parent[to] = v;
-                parent_cost[to] = cost;
                 depth[to] = depth[v] + 1;
-                edge_in[to] = (int)edge_tour.size();
-                edge_tour.push_back({v, to, cost});
-                enter_vertex(to);
+                parent_cost[to] = cost;
+                enter_vertex(to, lca_tour);
                 stack.push_back({to, 0});
                 continue;
             }
 
-            out[v] = (int)vertex_tour.size();
+            up[v] = (int)lca_tour.size();
             stack.pop_back();
             if (parent[v] != -1) {
-                edge_out[v] = (int)edge_tour.size();
-                edge_tour.push_back({v, parent[v], parent_cost[v]});
-                walk.push_back(parent[v]);
+                const int p = parent[v];
+                lca_tour.push_back({depth[p], p});
             }
         }
 
-        // 入力は連結な木であることを前提とする。
-        assert((int)vertex_tour.size() == n);
+        // 全頂点を訪問し、各辺を往復した頂点列の長さは 2N-1。
+        assert((int)lca_tour.size() == 2 * n - 1);
+        lca_rmq = internal_euler_tour::LcaSegmentTree(lca_tour);
+    }
 
-        std::vector<internal_euler_tour::LcaValue> lca_values;
-        lca_values.reserve(walk.size());
-        for (int v : walk) {
-            lca_values.push_back({depth[v], v});
-        }
-        lca_rmq = internal_euler_tour::LcaSegmentTree(lca_values);
+    // down/up の添字空間のサイズ。root の up[root] も有効な添字なので 2N。
+    int size() const {
+        return 2 * (int)down.size();
+    }
+
+    std::pair<int, int> idx(int v) const {
+        assert_vertex(v);
+        return {down[v], up[v]};
     }
 
     std::pair<int, int> subtree_range(int v) const {
-        return {in[v], out[v]};
+        return idx(v);
     }
 
-    // 頂点 v の部分木に対応する [left, right) を query に渡す。O(1) + query の計算量。
-    // query は vertex_tour と同じ添字で管理されたデータ構造を処理する。
+    // v の部分木の頂点に対応する [down[v], up[v]) を query に渡す。
     template<class F>
     decltype(auto) subtree_query(int v, F&& query) const {
-        return subtree_node_query(v, std::forward<F>(query));
+        assert_vertex(v);
+        return std::forward<F>(query)(down[v], up[v]);
     }
 
-    // subtree_query() の、頂点を対象とすることを明示した別名。
     template<class F>
     decltype(auto) subtree_node_query(int v, F&& query) const {
-        assert(0 <= v && v < (int)parent.size());
-        return std::forward<F>(query)(in[v], out[v]);
+        return subtree_query(v, std::forward<F>(query));
     }
 
-    // v の部分木内の辺に対応する [left, right) を query に渡す。
-    // 辺 parent[x] -> x の値を in[x] に置く規約で、v へ入る辺は含めない。
+    // v の部分木内の辺を子側頂点の down に置く。v へ入る辺は除く。
     template<class F>
     decltype(auto) subtree_edge_query(int v, F&& query) const {
-        assert(0 <= v && v < (int)parent.size());
-        return std::forward<F>(query)(in[v] + 1, out[v]);
+        assert_vertex(v);
+        return std::forward<F>(query)(down[v] + 1, up[v]);
     }
 
-    // 頂点 v に対応する一点区間 [in[v], in[v] + 1) を query に渡す。
+    // u-v パス上の頂点を表す 2 区間を query(left, right) に渡す。
+    // 1 区間目は LCA を含み、2 区間目は LCA を含まない。
     template<class F>
-    decltype(auto) node_query(int v, F&& query) const {
-        assert(0 <= v && v < (int)parent.size());
-        return std::forward<F>(query)(in[v], in[v] + 1);
+    void node_query(int u, int v, F&& query) const {
+        assert_vertex(u);
+        assert_vertex(v);
+        const int w = lca(u, v);
+        query(down[w], down[u] + 1);
+        query(down[w] + 1, down[v] + 1);
     }
 
-    // 辺 parent[v] -> v に対応する一点区間を query に渡す。
-    // root には入る辺がないため、空区間 [in[root], in[root]) を渡す。
+    // u-v パス上の辺を表す 2 区間を query(left, right) に渡す。
+    // 辺は子側頂点の down/up に正負の値を置く。
     template<class F>
-    decltype(auto) edge_query(int v, F&& query) const {
-        assert(0 <= v && v < (int)parent.size());
-        const int right = in[v] + (v == root ? 0 : 1);
-        return std::forward<F>(query)(in[v], right);
+    void edge_query(int u, int v, F&& query) const {
+        assert_vertex(u);
+        assert_vertex(v);
+        const int w = lca(u, v);
+        query(down[w] + 1, down[u] + 1);
+        query(down[w] + 1, down[v] + 1);
     }
 
     bool is_ancestor(int ancestor, int v) const {
-        return in[ancestor] <= in[v] && out[v] <= out[ancestor];
+        assert_vertex(ancestor);
+        assert_vertex(v);
+        return down[ancestor] <= down[v] && down[v] < up[ancestor];
     }
 
     // u と v の最小共通祖先を返す。O(log N)。
     int lca(int u, int v) const {
-        assert(0 <= u && u < (int)parent.size());
-        assert(0 <= v && v < (int)parent.size());
-
-        int left = first[u];
-        int right = first[v];
+        assert_vertex(u);
+        assert_vertex(v);
+        int left = down[u];
+        int right = down[v];
         if (left > right) std::swap(left, right);
         return lca_rmq.prod(left, right + 1).second;
     }
@@ -207,10 +190,14 @@ struct EulerTour {
 private:
     internal_euler_tour::LcaSegmentTree lca_rmq;
 
-    void enter_vertex(int v) {
-        in[v] = (int)vertex_tour.size();
-        vertex_tour.push_back(v);
-        first[v] = (int)walk.size();
-        walk.push_back(v);
+    void assert_vertex(int v) const {
+        assert(0 <= v && v < (int)down.size());
+    }
+
+    void enter_vertex(
+        int v,
+        std::vector<internal_euler_tour::LcaValue>& lca_tour) {
+        down[v] = (int)lca_tour.size();
+        lca_tour.push_back({depth[v], v});
     }
 };

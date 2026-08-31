@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <atcoder/fenwicktree>
 #include <atcoder/segtree>
 
 #include "graph.h"
@@ -199,5 +200,58 @@ private:
         std::vector<internal_euler_tour::LcaValue>& lca_tour) {
         down[v] = (int)lca_tour.size();
         lca_tour.push_back({depth[v], v});
+    }
+};
+
+// Euler Tour Technique による動的な木の辺重みパス和。
+// 辺は子側の頂点で指定する。v == root に対する add_edge_weight() は使用できない。
+//
+// EulerTourEdgePathSum path_sum(tree, root);
+// path_sum.add_edge_weight(v, w);  // parent[v]-v の辺の重みに w を加える
+// path_sum.distance(u, v);         // u-v パス上の辺重みの和を返す
+//
+// 構築 O(N)、更新 O(log N)、距離クエリ O(log N)、空間 O(N)。
+struct EulerTourEdgePathSum {
+    EulerTour tour;
+
+    EulerTourEdgePathSum() = default;
+
+    explicit EulerTourEdgePathSum(const Graph& tree, int root = 0) {
+        init(tree, root);
+    }
+
+    void init(const Graph& tree, int root = 0) {
+        tour.init(tree, root);
+        fenwick = atcoder::fenwick_tree<long long>(tour.size());
+
+        for (int v = 0; v < tree.size(); ++v) {
+            if (v != tour.root) add_at_vertex(v, tour.parent_cost[v]);
+        }
+    }
+
+    // 頂点 v と parent[v] を結ぶ辺の重みに value を加える。O(log N)。
+    void add_edge_weight(int v, long long value) {
+        assert(0 <= v && v < (int)tour.parent.size());
+        assert(v != tour.root);
+        add_at_vertex(v, value);
+    }
+
+    // u-v パス上の辺重みの和を返す。O(log N)。
+    long long distance(int u, int v) const {
+        long long result = 0;
+        tour.edge_query(u, v, [&](int left, int right) {
+            result += fenwick.sum(left, right);
+        });
+        return result;
+    }
+
+private:
+    // ACL の fenwick_tree::sum() は非 const だが、論理的には読み取りのみ。
+    mutable atcoder::fenwick_tree<long long> fenwick;
+
+    void add_at_vertex(int v, long long value) {
+        const auto [down, up] = tour.idx(v);
+        fenwick.add(down, value);
+        fenwick.add(up, -value);
     }
 };

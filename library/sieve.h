@@ -120,3 +120,39 @@ struct Sieve {
         return res;
     }
 };
+
+// 約数系高速ゼータ変換を行う O(N log log N)
+// result[k] = sum_{k | i} f[i]
+// f[0] は使わない
+// primes は 2 以上 result.size() - 1 以下の素数列
+// 例えば Sieve sieve((int)f.size() - 1); とすると sieve.primes が得られる
+template<class T>
+std::vector<T> fast_zeta(const std::vector<T>& f, const std::vector<int>& primes) {
+    std::vector<T> result = f;
+    int n = (int)result.size();
+    for (int p : primes) {
+        if (p >= n) break;
+        for (int k = (n - 1) / p; k >= 1; k--) {
+            result[k] += result[k * p];
+        }
+    }
+    return result;
+}
+
+// 約数系高速メビウス変換を行う O(N log log N)
+// F[k] = sum_{k | i} f[i] を満たす F から f を復元する
+// F[0] は使わない
+// primes は 2 以上 result.size() - 1 以下の素数列
+// 例えば Sieve sieve((int)F.size() - 1); とすると sieve.primes が得られる
+template<class T>
+std::vector<T> fast_mobius(const std::vector<T>& F, const std::vector<int>& primes) {
+    std::vector<T> result = F;
+    int n = (int)result.size();
+    for (int p : primes) {
+        if (p >= n) break;
+        for (int k = 1; k * p < n; k++) {
+            result[k] -= result[k * p];
+        }
+    }
+    return result;
+}

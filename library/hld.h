@@ -30,6 +30,8 @@
 #include <utility>
 #include <vector>
 
+#include <atcoder/fenwicktree>
+
 #include "graph.h"
 
 struct HeavyLightDecomposition {
@@ -313,3 +315,54 @@ private:
 };
 
 using HLD = HeavyLightDecomposition;
+
+// HLD による動的な木の辺重みパス和。
+// 辺は子側の頂点で指定する。v == root に対する add_edge_weight() は使用できない。
+//
+// HLDEdgePathSum path_sum(tree, root);
+// path_sum.add_edge_weight(v, w);  // parent[v]-v の辺の重みに w を加える
+// path_sum.distance(u, v);         // u-v パス上の辺重みの和を返す
+//
+// 構築 O(N log N)、更新 O(log N)、距離クエリ O(log^2 N)、空間 O(N)。
+struct HLDEdgePathSum {
+    HLD hld;
+
+    HLDEdgePathSum() = default;
+
+    explicit HLDEdgePathSum(const Graph& tree, int root = 0) {
+        init(tree, root);
+    }
+
+    void init(const Graph& tree, int root = 0) {
+        hld.init(tree, root);
+        fenwick = atcoder::fenwick_tree<long long>(hld.size());
+
+        for (int v = 0; v < tree.size(); ++v) {
+            if (v != hld.root) add_at_vertex(v, hld.parent_cost[v]);
+        }
+    }
+
+    // 頂点 v と parent[v] を結ぶ辺の重みに value を加える。O(log N)。
+    void add_edge_weight(int v, long long value) {
+        assert(0 <= v && v < (int)hld.parent.size());
+        assert(v != hld.root);
+        add_at_vertex(v, value);
+    }
+
+    // u-v パス上の辺重みの和を返す。O(log^2 N)。
+    long long distance(int u, int v) const {
+        long long result = 0;
+        hld.edge_query(u, v, [&](int left, int right) {
+            result += fenwick.sum(left, right);
+        });
+        return result;
+    }
+
+private:
+    // ACL の fenwick_tree::sum() は非 const だが、論理的には読み取りのみ。
+    mutable atcoder::fenwick_tree<long long> fenwick;
+
+    void add_at_vertex(int v, long long value) {
+        fenwick.add(hld.id[v], value);
+    }
+};

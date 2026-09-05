@@ -14,11 +14,13 @@
 - `dijkstra.h`
 - `dsu.h`
 - `edge.h`
+- `euler_tour.h`
 - `fraction.h`
 - `gcd.h`
 - `geometry2d.h`
 - `graph.h`
 - `hakidashi.h`
+- `hld.h`
 - `is_nibu.h`
 - `kmp.h`
 - `lca.h`

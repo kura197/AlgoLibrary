@@ -40,6 +40,7 @@
 - `segtree_alias.h`
 - `segtree2d.h`
 - `sieve.h`
+- `stack.h`
 - `string_next.h`
 - `suffix_lcp.h`
 - `topological_sort.h`

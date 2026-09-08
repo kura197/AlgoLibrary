@@ -14,7 +14,7 @@ using namespace std;
 // DAG でない場合、topo.size() < V になる。
 // topo に含まれない頂点の rank は -1。
 // 有向グラフを想定する。Graph には add_directed_edge() を使うこと。
-pair<vector<int>, vector<int>> Topological_Sort(const Graph& graph) {
+pair<vector<int>, vector<int>> topological_Sort(const Graph& graph) {
     const int V = graph.size();
 
     vector<int> indeg(V, 0);

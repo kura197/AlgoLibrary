@@ -8,18 +8,40 @@
 
 using namespace std;
 
+namespace randxor_detail {
+
+struct State {
+    unsigned int x = 123456789;
+    unsigned int y = 362436069;
+    unsigned int z = 521288629;
+    unsigned int w = 88675123;
+};
+
+State& state() {
+    static State state;
+    return state;
+}
+
+}  // namespace randxor_detail
+
+// Set the seed. The same seed produces the same sequence.
+void set_seed(unsigned int seed) {
+    randxor_detail::State& state = randxor_detail::state();
+    state.x = 123456789;
+    state.y = 362436069;
+    state.z = 521288629;
+    state.w = seed;
+}
+
 // xor128
 unsigned int randxor() {
-    static unsigned int x = 123456789;
-    static unsigned int y = 362436069;
-    static unsigned int z = 521288629;
-    static unsigned int w = 88675123;
-    unsigned int t = x ^ (x << 11);
-    x = y;
-    y = z;
-    z = w;
-    w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
-    return w;
+    randxor_detail::State& state = randxor_detail::state();
+    unsigned int t = state.x ^ (state.x << 11);
+    state.x = state.y;
+    state.y = state.z;
+    state.z = state.w;
+    state.w = (state.w ^ (state.w >> 19)) ^ (t ^ (t >> 8));
+    return state.w;
 }
 
 // return [0, 1)

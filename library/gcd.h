@@ -1,5 +1,5 @@
 #pragma once
-// https://github.com/kura197/AlgoLibrary
+// https://github.com/kura197/AlgoLibrary/blob/main/library/gcd.h
 
 // 拡張Euclidの互除法 O(log max(a, b))
 // ax + by = gcd(a, b) を満たす x, y と gcd(a, b) を返す

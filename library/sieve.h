@@ -1,5 +1,5 @@
 #pragma once
-// https://github.com/kura197/AlgoLibrary
+// https://github.com/kura197/AlgoLibrary/blob/main/library/sieve.h
 
 #include <cassert>
 #include <map>

@@ -1,5 +1,5 @@
 #pragma once
-// https://github.com/kura197/AlgoLibrary
+// https://github.com/kura197/AlgoLibrary/blob/main/library/suffix_lcp.h
 
 #include <algorithm>
 #include <string>

@@ -1,5 +1,5 @@
 #pragma once
-// https://github.com/kura197/AlgoLibrary
+// https://github.com/kura197/AlgoLibrary/blob/main/library/point2.h
 
 #include <algorithm>
 #include <cmath>

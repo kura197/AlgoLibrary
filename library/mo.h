@@ -1,5 +1,5 @@
 #pragma once
-// https://github.com/kura197/AlgoLibrary
+// https://github.com/kura197/AlgoLibrary/blob/main/library/mo.h
 
 // https://ei1333.hateblo.jp/entry/2017/09/11/211011
 

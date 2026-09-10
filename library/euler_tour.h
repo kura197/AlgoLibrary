@@ -1,5 +1,5 @@
 #pragma once
-// https://github.com/kura197/AlgoLibrary
+// https://github.com/kura197/AlgoLibrary/blob/main/library/euler_tour.h
 // References:
 // - https://info.atcoder.jp/entry/algorithm_lectures/euler_tour_technique
 // - https://nyaannyaan.github.io/library/tree/euler-tour.hpp.html

@@ -1,5 +1,5 @@
 #pragma once
-// https://github.com/kura197/AlgoLibrary
+// https://github.com/kura197/AlgoLibrary/blob/main/library/fraction.h
 
 
 /// 有理数型 (doubleなどの誤差が問題になる場合に使用)

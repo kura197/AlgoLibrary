@@ -1,5 +1,5 @@
 #pragma once
-// https://github.com/kura197/AlgoLibrary
+// https://github.com/kura197/AlgoLibrary/blob/main/library/nth_accumulater.h
 
 // https://bolero-fk.github.io/ProconLibrary/DataStructure/nth_accumulater.hpp
 

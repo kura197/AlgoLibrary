@@ -37,6 +37,7 @@
 - `prime.h`
 - `randxor.h`
 - `rerooting.h`
+- `runlength.h`
 - `segtree_alias.h`
 - `segtree2d.h`
 - `sieve.h`

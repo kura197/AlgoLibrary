@@ -126,6 +126,114 @@ struct Sieve {
     }
 };
 
+// primes と is_prime だけを保持する省メモリな線形篩
+// 構築 O(n), 素因数分解 O(sqrt(n) / log(n)), 約数列挙 O(sqrt(n) / log(n) + 約数個数)
+struct FastSieve {
+    // primes[i] := i番目の素数
+    std::vector<int> primes;
+    // is_prime[x] := xが素数かどうか
+    std::vector<bool> is_prime;
+
+    FastSieve() = default;
+    FastSieve(int n) { build(n); }
+
+    // n以下について素数情報を前計算する O(n)
+    void build(int n) {
+        primes.clear();
+        is_prime.assign(n + 1, true);
+        if (n >= 0) is_prime[0] = false;
+        if (n >= 1) is_prime[1] = false;
+
+        for (int i = 2; i <= n; i++) {
+            if (is_prime[i]) primes.push_back(i);
+
+            for (int prime : primes) {
+                long long composite = (long long)i * prime;
+                if (composite > n) break;
+
+                is_prime[composite] = false;
+                if (i % prime == 0) break;
+            }
+        }
+    }
+
+    // 素因数分解する
+    // sqrt(n) <= 構築時の上限を仮定する
+    // 計算量: O(sqrt(n) / log(n))
+    std::map<int, int> prime_factor(int n) const {
+        assert(1 <= n);
+        int built_n = (int)is_prime.size() - 1;
+        assert(n == 1 || (long long)built_n * built_n >= n);
+
+        std::map<int, int> res;
+        for (int prime : primes) {
+            if ((long long)prime * prime > n) break;
+            while (n % prime == 0) {
+                res[prime]++;
+                n /= prime;
+            }
+        }
+        if (n > 1) res[n]++;
+        return res;
+    }
+
+    // 区間 [left, right] の各整数をまとめて素因数分解する
+    // sqrt(right) <= 構築時の上限を仮定する
+    // 計算量: O((right - left + 1) log log right + 区間内で実際に割る回数)
+    std::vector<std::map<long long, int>> prime_factors(long long left, long long right) const {
+        assert(1 <= left && left <= right);
+        int built_n = (int)is_prime.size() - 1;
+        assert((long long)built_n * built_n >= right);
+
+        int length = (int)(right - left + 1);
+        std::vector<long long> values(length);
+        std::vector<std::map<long long, int>> factors(length);
+        for (int i = 0; i < length; i++) {
+            values[i] = left + i;
+        }
+
+        for (int p : primes) {
+            long long prime = p;
+            if (prime * prime > right) break;
+
+            long long start = (left + prime - 1) / prime * prime;
+            for (long long x = start; x <= right; x += prime) {
+                int index = (int)(x - left);
+                while (values[index] % prime == 0) {
+                    factors[index][prime]++;
+                    values[index] /= prime;
+                }
+            }
+        }
+
+        for (int i = 0; i < length; i++) {
+            if (values[i] > 1) {
+                factors[i][values[i]]++;
+            }
+        }
+        return factors;
+    }
+
+    // 約数を列挙する
+    // sqrt(n) <= 構築時の上限を仮定する
+    // 計算量: O(sqrt(n) / log(n) + 約数個数)
+    std::vector<int> divisor(int n) const {
+        auto factors = prime_factor(n);
+        std::vector<int> res{1};
+        for (const auto& [prime, count] : factors) {
+            int size = (int)res.size();
+            int mul = 1;
+            for (int i = 1; i <= count; i++) {
+                mul *= prime;
+                for (int j = 0; j < size; j++) {
+                    res.push_back(res[j] * mul);
+                }
+            }
+        }
+        return res;
+    }
+};
+
 // 約数系高速ゼータ変換を行う O(N log log N)
 // result[k] = sum_{k | i} f[i]
 // f[0] は使わない

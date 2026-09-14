@@ -108,6 +108,41 @@ struct Trie {
         return nodes[node_id].common;
     }
 
+    // 辞書順で value 以下の文字列の登録個数: O(|value| * char_size)
+    int count_less_equal(const string& value) const {
+        int result = 0;
+        int node_id = root;
+        for (char ch : value) {
+            int c = (int)ch - base;
+            if (c < 0) {
+                // 現在位置で終わる文字列だけが value より小さい
+                return result + (int)nodes[node_id].accept.size();
+            }
+            if (c >= char_size) {
+                // 現在の部分木にある文字列は全て value より小さい
+                return result + nodes[node_id].common;
+            }
+
+            // value の真の prefix は value より小さい
+            result += (int)nodes[node_id].accept.size();
+            for (int smaller = 0; smaller < c; smaller++) {
+                int next_id = nodes[node_id].next[smaller];
+                if (next_id != -1) result += nodes[next_id].common;
+            }
+
+            node_id = nodes[node_id].next[c];
+            if (node_id == -1) return result;
+        }
+
+        // value と一致する文字列を含める
+        return result + (int)nodes[node_id].accept.size();
+    }
+
+    // 辞書順で value より小さい文字列の登録個数: O(|value| * char_size)
+    int count_less(const string& value) const {
+        return count_less_equal(value) - count(value);
+    }
+
     // word と一致する文字列を1つ削除する。存在しなければ false
     // ノード自体は削除せず、以後の insert で再利用する
     bool erase(const string& word) {

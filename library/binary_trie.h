@@ -137,6 +137,12 @@ struct BinaryTrie {
         return count_xor_less(T(0), value);
     }
 
+    // value 以下の要素数を返す
+    int count_less_equal(T value) const {
+        if (value > value_mask()) return size();
+        return count_less(value) + count(value);
+    }
+
     // (要素 xor value) < upper_bound を満たす要素数を返す
     int count_xor_less(T value, T upper_bound) const {
         if (upper_bound > value_mask()) return size();

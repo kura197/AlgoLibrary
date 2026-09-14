@@ -6,6 +6,7 @@
 - `SCC.h`
 - `auxiliary_tree.h`
 - `base.h`
+- `binary_trie.h`
 - `chineserem.h`
 - `combination.h`
 - `comulative_sum.h`

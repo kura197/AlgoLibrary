@@ -33,6 +33,7 @@
 - `mo.h`
 - `mst.h`
 - `nth_accumulater.h`
+- `ordered_set.h`
 - `point2.h`
 - `point3.h`
 - `prime.h`

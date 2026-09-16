@@ -51,6 +51,7 @@
 - `trace.h`
 - `trie.h`
 - `warshall_floyd.h`
+- `weighted_union_find.h`
 - `z_algorithm.h`
 
 ## 未対応

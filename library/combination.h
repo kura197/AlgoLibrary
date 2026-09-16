@@ -80,3 +80,14 @@ long long get_single_comb_mod(long long n, long long k, int mod){
 
     return (num / den).val();
 }
+
+// N 個から K 個を選ぶ組合せを bit で昇順に列挙する (1 <= K <= N, N < 63)
+// long long bit = (1LL << K) - 1;
+// do {
+//     // i 番目を選んでいるか: (bit >> i) & 1
+// } while (next_combination(bit, N));
+template<class T> bool next_combination(T &bit, int N) {
+    T x = bit & -bit, y = bit + x;
+    bit = (((bit & ~y) / x) >> 1) | y;
+    return (bit < (1LL << N));
+}

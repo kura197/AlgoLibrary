@@ -273,3 +273,79 @@ struct RangeAssignRangeSum {
         return seg.all_prod().sum;
     }
 };
+
+// 一次変換 x -> a * x + b
+struct AffineTransformation {
+    long long a;
+    long long b;
+};
+
+RangeSumNode range_affine_range_sum_mapping(AffineTransformation f, RangeSumNode x) {
+    return {f.a * x.sum + f.b * x.len, x.len};
+}
+
+// f(g(x)) となるように合成する
+AffineTransformation range_affine_range_sum_composition(
+    AffineTransformation f,
+    AffineTransformation g
+) {
+    return {f.a * g.a, f.a * g.b + f.b};
+}
+
+AffineTransformation range_affine_range_sum_id() {
+    return {1, 0};
+}
+
+using RangeAffineRangeSumSegtree = atcoder::lazy_segtree<
+    RangeSumNode,
+    range_add_range_sum_op,
+    range_add_range_sum_e,
+    AffineTransformation,
+    range_affine_range_sum_mapping,
+    range_affine_range_sum_composition,
+    range_affine_range_sum_id>;
+
+// 使い方:
+// RangeAffineRangeSum seg(vector<long long>{1, 2, 3});
+// seg.apply(0, 2, 3, 4); // [0, 2) の各 x を 3 * x + 4 に更新
+// long long sum = seg.prod(0, 3);
+struct RangeAffineRangeSum {
+    RangeAffineRangeSumSegtree seg;
+
+    RangeAffineRangeSum() = default;
+
+    explicit RangeAffineRangeSum(int n) : seg(vector<RangeSumNode>(n, {0, 1})) {}
+
+    explicit RangeAffineRangeSum(const vector<long long>& values) : seg(build(values)) {}
+
+    static vector<RangeSumNode> build(const vector<long long>& values) {
+        vector<RangeSumNode> init;
+        init.reserve(values.size());
+        for (long long x : values) init.push_back({x, 1});
+        return init;
+    }
+
+    void set(int p, long long x) {
+        seg.set(p, {x, 1});
+    }
+
+    long long get(int p) {
+        return seg.get(p).sum;
+    }
+
+    void apply(int l, int r, AffineTransformation f) {
+        seg.apply(l, r, f);
+    }
+
+    void apply(int l, int r, long long a, long long b) {
+        apply(l, r, {a, b});
+    }
+
+    long long prod(int l, int r) {
+        return seg.prod(l, r).sum;
+    }
+
+    long long all_prod() {
+        return seg.all_prod().sum;
+    }
+};

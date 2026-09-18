@@ -22,6 +22,7 @@
 - `graph.h`
 - `hakidashi.h`
 - `hld.h`
+- `interval_set.h`
 - `is_nibu.h`
 - `kmp.h`
 - `lca.h`

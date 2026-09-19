@@ -47,7 +47,7 @@ struct RangeAddRangeSum {
 
     RangeAddRangeSum() = default;
 
-    explicit RangeAddRangeSum(int n) : seg(vector<RangeSumNode>(n, {0, 1})) {}
+    explicit RangeAddRangeSum(int n) : seg(n) {}
 
     explicit RangeAddRangeSum(const vector<long long>& values) : seg(build(values)) {}
 
@@ -92,6 +92,7 @@ long long range_add_range_max_e() {
 }
 
 long long range_add_range_max_mapping(long long f, long long x) {
+    if (x == range_add_range_max_e()) return x;
     return x + f;
 }
 
@@ -117,7 +118,7 @@ struct RangeAddRangeMax {
 
     RangeAddRangeMax() = default;
 
-    explicit RangeAddRangeMax(int n) : seg(vector<long long>(n, 0)) {}
+    explicit RangeAddRangeMax(int n) : seg(n) {}
 
     explicit RangeAddRangeMax(const vector<long long>& values) : seg(values) {}
 
@@ -151,6 +152,7 @@ long long range_add_range_min_e() {
 }
 
 long long range_add_range_min_mapping(long long f, long long x) {
+    if (x == range_add_range_min_e()) return x;
     return x + f;
 }
 
@@ -176,7 +178,7 @@ struct RangeAddRangeMin {
 
     RangeAddRangeMin() = default;
 
-    explicit RangeAddRangeMin(int n) : seg(vector<long long>(n, 0)) {}
+    explicit RangeAddRangeMin(int n) : seg(n) {}
 
     explicit RangeAddRangeMin(const vector<long long>& values) : seg(values) {}
 
@@ -242,7 +244,7 @@ struct RangeAssignRangeSum {
 
     RangeAssignRangeSum() = default;
 
-    explicit RangeAssignRangeSum(int n) : seg(vector<RangeSumNode>(n, {0, 1})) {}
+    explicit RangeAssignRangeSum(int n) : seg(n) {}
 
     explicit RangeAssignRangeSum(const vector<long long>& values) : seg(build(values)) {}
 
@@ -314,7 +316,7 @@ struct RangeAffineRangeSum {
 
     RangeAffineRangeSum() = default;
 
-    explicit RangeAffineRangeSum(int n) : seg(vector<RangeSumNode>(n, {0, 1})) {}
+    explicit RangeAffineRangeSum(int n) : seg(n) {}
 
     explicit RangeAffineRangeSum(const vector<long long>& values) : seg(build(values)) {}
 

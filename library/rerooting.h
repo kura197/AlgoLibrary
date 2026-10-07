@@ -9,21 +9,26 @@ using namespace std;
 
 // Rerooting DP
 //
-// 使い方:
-// long long rerooting_merge(long long a, long long b) { return max(a, b); }
-// long long rerooting_add_vertex(long long x, int v) { return x; }
-// long long rerooting_add_edge(long long x, int from, int to, long long cost) {
+// 使い方: 各頂点から最も遠い頂点までの距離を求める例
+// using DP = long long;
+// 隣接する各方向から得た最大距離を統合する
+// DP rerooting_merge(DP a, DP b) { return max(a, b); }
+// 頂点 v の情報をDPに反映する。この例では何も加えない
+// DP rerooting_add_vertex(DP x, int v) { return x; }
+// DPを辺 (from, to) 越しに渡し、辺の重みを距離に加える
+// DP rerooting_add_edge(DP x, int from, int to, long long cost) {
 //     return x + cost;
 // }
-// long long rerooting_e() { return 0; }
+// mergeの単位元。隣接方向からの距離がない状態を表す
+// DP rerooting_e() { return 0; }
 // Rerooting<
-//     long long,
+//     DP,
 //     rerooting_merge,
 //     rerooting_add_vertex,
 //     rerooting_add_edge,
 //     rerooting_e
 // > rerooting(tree);
-// vector<long long> ans = rerooting.solve();
+// vector<DP> ans = rerooting.solve();
 //
 // 計算量: O(N)
 template<

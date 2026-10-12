@@ -56,7 +56,8 @@ struct RangeAddRangeSum {
 
     RangeAddRangeSum() = default;
 
-    explicit RangeAddRangeSum(int n) : seg(n) {}
+    explicit RangeAddRangeSum(int n)
+        : seg(vector<RangeSumNode<T>>(n, {T{}, 1})) {}
 
     explicit RangeAddRangeSum(const vector<T>& values) : seg(build(values)) {}
 
@@ -281,7 +282,8 @@ struct RangeAssignRangeSum {
 
     RangeAssignRangeSum() = default;
 
-    explicit RangeAssignRangeSum(int n) : seg(n) {}
+    explicit RangeAssignRangeSum(int n)
+        : seg(vector<RangeSumNode<T>>(n, {T{}, 1})) {}
 
     explicit RangeAssignRangeSum(const vector<T>& values) : seg(build(values)) {}
 
@@ -362,7 +364,8 @@ struct RangeAffineRangeSum {
 
     RangeAffineRangeSum() = default;
 
-    explicit RangeAffineRangeSum(int n) : seg(n) {}
+    explicit RangeAffineRangeSum(int n)
+        : seg(vector<RangeSumNode<T>>(n, {T{}, 1})) {}
 
     explicit RangeAffineRangeSum(const vector<T>& values) : seg(build(values)) {}
 

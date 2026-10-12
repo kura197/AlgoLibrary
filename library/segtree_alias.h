@@ -2,6 +2,7 @@
 // https://github.com/kura197/AlgoLibrary/blob/main/library/segtree_alias.h
 
 #include <algorithm>
+#include <limits>
 #include <vector>
 
 #include <atcoder/segtree>
@@ -10,49 +11,60 @@
 
 using namespace std;
 
-long long rmq_op(long long a, long long b) {
+template<class T>
+T rmq_op(T a, T b) {
     return min(a, b);
 }
 
-long long rmq_e() {
-    return (1LL << 60);
+template<class T>
+T rmq_e() {
+    return numeric_limits<T>::max();
 }
 
-using RMQ = atcoder::segtree<long long, rmq_op, rmq_e>;
+template<class T>
+using RMQ = atcoder::segtree<T, rmq_op<T>, rmq_e<T>>;
 
-long long rsq_op(long long a, long long b) {
+template<class T>
+T rsq_op(T a, T b) {
     return a + b;
 }
 
-long long rsq_e() {
-    return 0;
+template<class T>
+T rsq_e() {
+    return T{};
 }
 
-using RSQ = atcoder::segtree<long long, rsq_op, rsq_e>;
+template<class T>
+using RSQ = atcoder::segtree<T, rsq_op<T>, rsq_e<T>>;
 
-long long rmaxq_op(long long a, long long b) {
+template<class T>
+T rmaxq_op(T a, T b) {
     return max(a, b);
 }
 
-long long rmaxq_e() {
-    return -(1LL << 60);
+template<class T>
+T rmaxq_e() {
+    return numeric_limits<T>::lowest();
 }
 
-using RMaxQ = atcoder::segtree<long long, rmaxq_op, rmaxq_e>;
+template<class T>
+using RMaxQ = atcoder::segtree<T, rmaxq_op<T>, rmaxq_e<T>>;
 
 // 最大部分和を求めるために各区間で保持する値
 // max_subarray_sum が表す部分配列は1要素以上とする
+template<class T>
 struct MaximumSubarraySumNode {
-    long long sum;
-    long long max_prefix_sum;
-    long long max_suffix_sum;
-    long long max_subarray_sum;
+    T sum;
+    T max_prefix_sum;
+    T max_suffix_sum;
+    T max_subarray_sum;
     int length;
 };
 
-MaximumSubarraySumNode maximum_subarray_sum_op(
-    MaximumSubarraySumNode left,
-    MaximumSubarraySumNode right
+template<class T>
+MaximumSubarraySumNode<T> maximum_subarray_sum_op(
+    MaximumSubarraySumNode<T> left,
+    MaximumSubarraySumNode<T> right
 ) {
     if (left.length == 0) return right;
     if (right.length == 0) return left;
@@ -68,27 +80,31 @@ MaximumSubarraySumNode maximum_subarray_sum_op(
     };
 }
 
-MaximumSubarraySumNode maximum_subarray_sum_e() {
-    return {0, 0, 0, 0, 0};
+template<class T>
+MaximumSubarraySumNode<T> maximum_subarray_sum_e() {
+    return {T{}, T{}, T{}, T{}, 0};
 }
 
-MaximumSubarraySumNode maximum_subarray_sum_leaf(long long value) {
+template<class T>
+MaximumSubarraySumNode<T> maximum_subarray_sum_leaf(T value) {
     return {value, value, value, value, 1};
 }
 
-vector<MaximumSubarraySumNode> maximum_subarray_sum_nodes(const vector<long long>& values) {
-    vector<MaximumSubarraySumNode> nodes;
+template<class T>
+vector<MaximumSubarraySumNode<T>> maximum_subarray_sum_nodes(const vector<T>& values) {
+    vector<MaximumSubarraySumNode<T>> nodes;
     nodes.reserve(values.size());
-    for (long long value : values) {
+    for (T value : values) {
         nodes.push_back(maximum_subarray_sum_leaf(value));
     }
     return nodes;
 }
 
+template<class T>
 using MaximumSubarraySumSegtree = atcoder::segtree<
-    MaximumSubarraySumNode,
-    maximum_subarray_sum_op,
-    maximum_subarray_sum_e>;
+    MaximumSubarraySumNode<T>,
+    maximum_subarray_sum_op<T>,
+    maximum_subarray_sum_e<T>>;
 
 // 使い方:
 // RollingHashSegtree seg(rolling_hash_segtree_nodes(string("abracadabra")));

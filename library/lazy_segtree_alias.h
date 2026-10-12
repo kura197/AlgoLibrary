@@ -2,352 +2,398 @@
 // https://github.com/kura197/AlgoLibrary/blob/main/library/lazy_segtree_alias.h
 
 #include <algorithm>
+#include <limits>
 #include <vector>
 
 #include <atcoder/lazysegtree>
 
 using namespace std;
 
+template<class T>
 struct RangeSumNode {
-    long long sum;
+    T sum;
     int len;
 };
 
-RangeSumNode range_add_range_sum_op(RangeSumNode a, RangeSumNode b) {
+template<class T>
+RangeSumNode<T> range_add_range_sum_op(RangeSumNode<T> a, RangeSumNode<T> b) {
     return {a.sum + b.sum, a.len + b.len};
 }
 
-RangeSumNode range_add_range_sum_e() {
-    return {0, 0};
+template<class T>
+RangeSumNode<T> range_add_range_sum_e() {
+    return {T{}, 0};
 }
 
-RangeSumNode range_add_range_sum_mapping(long long f, RangeSumNode x) {
+template<class T>
+RangeSumNode<T> range_add_range_sum_mapping(T f, RangeSumNode<T> x) {
     return {x.sum + f * x.len, x.len};
 }
 
-long long range_add_range_sum_composition(long long f, long long g) {
+template<class T>
+T range_add_range_sum_composition(T f, T g) {
     return f + g;
 }
 
-long long range_add_range_sum_id() {
-    return 0;
+template<class T>
+T range_add_range_sum_id() {
+    return T{};
 }
 
+template<class T>
 using RangeAddRangeSumSegtree = atcoder::lazy_segtree<
-    RangeSumNode,
-    range_add_range_sum_op,
-    range_add_range_sum_e,
-    long long,
-    range_add_range_sum_mapping,
-    range_add_range_sum_composition,
-    range_add_range_sum_id>;
+    RangeSumNode<T>,
+    range_add_range_sum_op<T>,
+    range_add_range_sum_e<T>,
+    T,
+    range_add_range_sum_mapping<T>,
+    range_add_range_sum_composition<T>,
+    range_add_range_sum_id<T>>;
 
+template<class T>
 struct RangeAddRangeSum {
-    RangeAddRangeSumSegtree seg;
+    RangeAddRangeSumSegtree<T> seg;
 
     RangeAddRangeSum() = default;
 
     explicit RangeAddRangeSum(int n) : seg(n) {}
 
-    explicit RangeAddRangeSum(const vector<long long>& values) : seg(build(values)) {}
+    explicit RangeAddRangeSum(const vector<T>& values) : seg(build(values)) {}
 
-    static vector<RangeSumNode> build(const vector<long long>& values) {
-        vector<RangeSumNode> init;
+    static vector<RangeSumNode<T>> build(const vector<T>& values) {
+        vector<RangeSumNode<T>> init;
         init.reserve(values.size());
-        for (long long x : values) init.push_back({x, 1});
+        for (T x : values) init.push_back({x, 1});
         return init;
     }
 
-    void set(int p, long long x) {
+    void set(int p, T x) {
         seg.set(p, {x, 1});
     }
 
-    RangeSumNode get_node(int p) {
+    RangeSumNode<T> get_node(int p) {
         return seg.get(p);
     }
 
-    long long get(int p) {
+    T get(int p) {
         return seg.get(p).sum;
     }
 
-    void apply(int l, int r, long long x) {
+    void apply(int l, int r, T x) {
         seg.apply(l, r, x);
     }
 
-    long long prod(int l, int r) {
+    T prod(int l, int r) {
         return seg.prod(l, r).sum;
     }
 
-    long long all_prod() {
+    T all_prod() {
         return seg.all_prod().sum;
     }
 };
 
-long long range_add_range_max_op(long long a, long long b) {
+template<class T>
+T range_add_range_max_op(T a, T b) {
     return max(a, b);
 }
 
-long long range_add_range_max_e() {
-    return -(1LL << 60);
+template<class T>
+T range_add_range_max_e() {
+    return numeric_limits<T>::lowest();
 }
 
-long long range_add_range_max_mapping(long long f, long long x) {
-    if (x == range_add_range_max_e()) return x;
+template<class T>
+T range_add_range_max_mapping(T f, T x) {
+    if (x == range_add_range_max_e<T>()) return x;
     return x + f;
 }
 
-long long range_add_range_max_composition(long long f, long long g) {
+template<class T>
+T range_add_range_max_composition(T f, T g) {
     return f + g;
 }
 
-long long range_add_range_max_id() {
-    return 0;
+template<class T>
+T range_add_range_max_id() {
+    return T{};
 }
 
+template<class T>
 using RangeAddRangeMaxSegtree = atcoder::lazy_segtree<
-    long long,
-    range_add_range_max_op,
-    range_add_range_max_e,
-    long long,
-    range_add_range_max_mapping,
-    range_add_range_max_composition,
-    range_add_range_max_id>;
+    T,
+    range_add_range_max_op<T>,
+    range_add_range_max_e<T>,
+    T,
+    range_add_range_max_mapping<T>,
+    range_add_range_max_composition<T>,
+    range_add_range_max_id<T>>;
 
+template<class T>
 struct RangeAddRangeMax {
-    RangeAddRangeMaxSegtree seg;
+    RangeAddRangeMaxSegtree<T> seg;
 
     RangeAddRangeMax() = default;
 
     explicit RangeAddRangeMax(int n) : seg(n) {}
 
-    explicit RangeAddRangeMax(const vector<long long>& values) : seg(values) {}
+    explicit RangeAddRangeMax(const vector<T>& values) : seg(values) {}
 
-    void set(int p, long long x) {
+    void set(int p, T x) {
         seg.set(p, x);
     }
 
-    long long get(int p) {
+    T get(int p) {
         return seg.get(p);
     }
 
-    void apply(int l, int r, long long x) {
+    void apply(int l, int r, T x) {
         seg.apply(l, r, x);
     }
 
-    long long prod(int l, int r) {
+    T prod(int l, int r) {
         return seg.prod(l, r);
     }
 
-    long long all_prod() {
+    T all_prod() {
         return seg.all_prod();
     }
 };
 
-long long range_add_range_min_op(long long a, long long b) {
+template<class T>
+T range_add_range_min_op(T a, T b) {
     return min(a, b);
 }
 
-long long range_add_range_min_e() {
-    return (1LL << 60);
+template<class T>
+T range_add_range_min_e() {
+    return numeric_limits<T>::max();
 }
 
-long long range_add_range_min_mapping(long long f, long long x) {
-    if (x == range_add_range_min_e()) return x;
+template<class T>
+T range_add_range_min_mapping(T f, T x) {
+    if (x == range_add_range_min_e<T>()) return x;
     return x + f;
 }
 
-long long range_add_range_min_composition(long long f, long long g) {
+template<class T>
+T range_add_range_min_composition(T f, T g) {
     return f + g;
 }
 
-long long range_add_range_min_id() {
-    return 0;
+template<class T>
+T range_add_range_min_id() {
+    return T{};
 }
 
+template<class T>
 using RangeAddRangeMinSegtree = atcoder::lazy_segtree<
-    long long,
-    range_add_range_min_op,
-    range_add_range_min_e,
-    long long,
-    range_add_range_min_mapping,
-    range_add_range_min_composition,
-    range_add_range_min_id>;
+    T,
+    range_add_range_min_op<T>,
+    range_add_range_min_e<T>,
+    T,
+    range_add_range_min_mapping<T>,
+    range_add_range_min_composition<T>,
+    range_add_range_min_id<T>>;
 
+template<class T>
 struct RangeAddRangeMin {
-    RangeAddRangeMinSegtree seg;
+    RangeAddRangeMinSegtree<T> seg;
 
     RangeAddRangeMin() = default;
 
     explicit RangeAddRangeMin(int n) : seg(n) {}
 
-    explicit RangeAddRangeMin(const vector<long long>& values) : seg(values) {}
+    explicit RangeAddRangeMin(const vector<T>& values) : seg(values) {}
 
-    void set(int p, long long x) {
+    void set(int p, T x) {
         seg.set(p, x);
     }
 
-    long long get(int p) {
+    T get(int p) {
         return seg.get(p);
     }
 
-    void apply(int l, int r, long long x) {
+    void apply(int l, int r, T x) {
         seg.apply(l, r, x);
     }
 
-    long long prod(int l, int r) {
+    T prod(int l, int r) {
         return seg.prod(l, r);
     }
 
-    long long all_prod() {
+    T all_prod() {
         return seg.all_prod();
     }
 };
 
+template<class T>
 struct RangeAssignValue {
-    long long value;
+    T value;
     bool has_value;
 };
 
-RangeSumNode range_assign_range_sum_op(RangeSumNode a, RangeSumNode b) {
+template<class T>
+RangeSumNode<T> range_assign_range_sum_op(RangeSumNode<T> a, RangeSumNode<T> b) {
     return {a.sum + b.sum, a.len + b.len};
 }
 
-RangeSumNode range_assign_range_sum_e() {
-    return {0, 0};
+template<class T>
+RangeSumNode<T> range_assign_range_sum_e() {
+    return {T{}, 0};
 }
 
-RangeSumNode range_assign_range_sum_mapping(RangeAssignValue f, RangeSumNode x) {
+template<class T>
+RangeSumNode<T> range_assign_range_sum_mapping(
+    RangeAssignValue<T> f,
+    RangeSumNode<T> x
+) {
     if (!f.has_value) return x;
     return {f.value * x.len, x.len};
 }
 
-RangeAssignValue range_assign_range_sum_composition(RangeAssignValue f, RangeAssignValue g) {
+template<class T>
+RangeAssignValue<T> range_assign_range_sum_composition(
+    RangeAssignValue<T> f,
+    RangeAssignValue<T> g
+) {
     if (f.has_value) return f;
     return g;
 }
 
-RangeAssignValue range_assign_range_sum_id() {
-    return {0, false};
+template<class T>
+RangeAssignValue<T> range_assign_range_sum_id() {
+    return {T{}, false};
 }
 
+template<class T>
 using RangeAssignRangeSumSegtree = atcoder::lazy_segtree<
-    RangeSumNode,
-    range_assign_range_sum_op,
-    range_assign_range_sum_e,
-    RangeAssignValue,
-    range_assign_range_sum_mapping,
-    range_assign_range_sum_composition,
-    range_assign_range_sum_id>;
+    RangeSumNode<T>,
+    range_assign_range_sum_op<T>,
+    range_assign_range_sum_e<T>,
+    RangeAssignValue<T>,
+    range_assign_range_sum_mapping<T>,
+    range_assign_range_sum_composition<T>,
+    range_assign_range_sum_id<T>>;
 
+template<class T>
 struct RangeAssignRangeSum {
-    RangeAssignRangeSumSegtree seg;
+    RangeAssignRangeSumSegtree<T> seg;
 
     RangeAssignRangeSum() = default;
 
     explicit RangeAssignRangeSum(int n) : seg(n) {}
 
-    explicit RangeAssignRangeSum(const vector<long long>& values) : seg(build(values)) {}
+    explicit RangeAssignRangeSum(const vector<T>& values) : seg(build(values)) {}
 
-    static vector<RangeSumNode> build(const vector<long long>& values) {
-        vector<RangeSumNode> init;
+    static vector<RangeSumNode<T>> build(const vector<T>& values) {
+        vector<RangeSumNode<T>> init;
         init.reserve(values.size());
-        for (long long x : values) init.push_back({x, 1});
+        for (T x : values) init.push_back({x, 1});
         return init;
     }
 
-    void set(int p, long long x) {
+    void set(int p, T x) {
         seg.set(p, {x, 1});
     }
 
-    long long get(int p) {
+    T get(int p) {
         return seg.get(p).sum;
     }
 
-    void apply(int l, int r, long long x) {
+    void apply(int l, int r, T x) {
         seg.apply(l, r, {x, true});
     }
 
-    long long prod(int l, int r) {
+    T prod(int l, int r) {
         return seg.prod(l, r).sum;
     }
 
-    long long all_prod() {
+    T all_prod() {
         return seg.all_prod().sum;
     }
 };
 
 // 一次変換 x -> a * x + b
+template<class T>
 struct AffineTransformation {
-    long long a;
-    long long b;
+    T a;
+    T b;
 };
 
-RangeSumNode range_affine_range_sum_mapping(AffineTransformation f, RangeSumNode x) {
+template<class T>
+RangeSumNode<T> range_affine_range_sum_mapping(
+    AffineTransformation<T> f,
+    RangeSumNode<T> x
+) {
     return {f.a * x.sum + f.b * x.len, x.len};
 }
 
 // f(g(x)) となるように合成する
-AffineTransformation range_affine_range_sum_composition(
-    AffineTransformation f,
-    AffineTransformation g
+template<class T>
+AffineTransformation<T> range_affine_range_sum_composition(
+    AffineTransformation<T> f,
+    AffineTransformation<T> g
 ) {
     return {f.a * g.a, f.a * g.b + f.b};
 }
 
-AffineTransformation range_affine_range_sum_id() {
-    return {1, 0};
+template<class T>
+AffineTransformation<T> range_affine_range_sum_id() {
+    return {T{1}, T{}};
 }
 
+template<class T>
 using RangeAffineRangeSumSegtree = atcoder::lazy_segtree<
-    RangeSumNode,
-    range_add_range_sum_op,
-    range_add_range_sum_e,
-    AffineTransformation,
-    range_affine_range_sum_mapping,
-    range_affine_range_sum_composition,
-    range_affine_range_sum_id>;
+    RangeSumNode<T>,
+    range_add_range_sum_op<T>,
+    range_add_range_sum_e<T>,
+    AffineTransformation<T>,
+    range_affine_range_sum_mapping<T>,
+    range_affine_range_sum_composition<T>,
+    range_affine_range_sum_id<T>>;
 
 // 使い方:
-// RangeAffineRangeSum seg(vector<long long>{1, 2, 3});
+// RangeAffineRangeSum<long long> seg(vector<long long>{1, 2, 3});
 // seg.apply(0, 2, 3, 4); // [0, 2) の各 x を 3 * x + 4 に更新
 // long long sum = seg.prod(0, 3);
+template<class T>
 struct RangeAffineRangeSum {
-    RangeAffineRangeSumSegtree seg;
+    RangeAffineRangeSumSegtree<T> seg;
 
     RangeAffineRangeSum() = default;
 
     explicit RangeAffineRangeSum(int n) : seg(n) {}
 
-    explicit RangeAffineRangeSum(const vector<long long>& values) : seg(build(values)) {}
+    explicit RangeAffineRangeSum(const vector<T>& values) : seg(build(values)) {}
 
-    static vector<RangeSumNode> build(const vector<long long>& values) {
-        vector<RangeSumNode> init;
+    static vector<RangeSumNode<T>> build(const vector<T>& values) {
+        vector<RangeSumNode<T>> init;
         init.reserve(values.size());
-        for (long long x : values) init.push_back({x, 1});
+        for (T x : values) init.push_back({x, 1});
         return init;
     }
 
-    void set(int p, long long x) {
+    void set(int p, T x) {
         seg.set(p, {x, 1});
     }
 
-    long long get(int p) {
+    T get(int p) {
         return seg.get(p).sum;
     }
 
-    void apply(int l, int r, AffineTransformation f) {
+    void apply(int l, int r, AffineTransformation<T> f) {
         seg.apply(l, r, f);
     }
 
-    void apply(int l, int r, long long a, long long b) {
+    void apply(int l, int r, T a, T b) {
         apply(l, r, {a, b});
     }
 
-    long long prod(int l, int r) {
+    T prod(int l, int r) {
         return seg.prod(l, r).sum;
     }
 
-    long long all_prod() {
+    T all_prod() {
         return seg.all_prod().sum;
     }
 };

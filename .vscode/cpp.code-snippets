@@ -1,0 +1,263 @@
+{
+    "Forward loop from zero": {
+        "scope": "cpp",
+        "prefix": "rep",
+        "body": [
+            "rep(${1:i}, ${2:n}) {",
+            "    $0",
+            "}"
+        ],
+        "description": "Loop forward from zero"
+    },
+    "Forward loop over range": {
+        "scope": "cpp",
+        "prefix": "repi",
+        "body": [
+            "repi(${1:i}, ${2:a}, ${3:b}) {",
+            "    $0",
+            "}"
+        ],
+        "description": "Loop forward over a half-open range"
+    },
+    "Reverse loop to zero": {
+        "scope": "cpp",
+        "prefix": "rrep",
+        "body": [
+            "rrep(${1:i}, ${2:n}) {",
+            "    $0",
+            "}"
+        ],
+        "description": "Loop backward to zero"
+    },
+    "Reverse loop over range": {
+        "scope": "cpp",
+        "prefix": "rrepi",
+        "body": [
+            "rrepi(${1:i}, ${2:a}, ${3:b}) {",
+            "    $0",
+            "}"
+        ],
+        "description": "Loop backward over a half-open range"
+    },
+    "Permutation loop": {
+        "scope": "cpp",
+        "prefix": "perm",
+        "body": [
+            "sort(all(${1:a}));",
+            "do {",
+            "    $0",
+            "} while (next_permutation(all(${1:a})));"
+        ],
+        "description": "Enumerate all permutations with do-while"
+    },
+    "Sorted index order": {
+        "scope": "cpp",
+        "prefix": "order",
+        "body": [
+            "vector<int> order(n);",
+            "iota(all(order), 0);",
+            "sort(all(order), [&](int lhs, int rhs) {",
+            "    return ${1:vec}[lhs] < ${1:vec}[rhs];",
+            "});",
+            "$0"
+        ],
+        "description": "Build indices sorted by the corresponding values"
+    },
+    "Bit exhaustive search": {
+        "scope": "cpp",
+        "prefix": "bits",
+        "body": [
+            "for (ll bits = 0; bits < (1LL << ${1:n}); bits++) {",
+            "    rep(i, ${1:n}) {",
+            "        if (bit(bits, i)) {",
+            "            $0",
+            "        }",
+            "    }",
+            "}"
+        ],
+        "description": "Enumerate every bit pattern"
+    },
+    "Population count": {
+        "scope": "cpp",
+        "prefix": "popcount",
+        "body": [
+            "__builtin_popcountll(${1:x})$0"
+        ],
+        "description": "Count set bits with __builtin_popcountll"
+    },
+    "Count leading zeros": {
+        "scope": "cpp",
+        "prefix": "countl_zero",
+        "body": [
+            "__builtin_clz(${1:x})$0"
+        ],
+        "description": "Count leading zeros with __builtin_clz"
+    },
+    "Count trailing zeros": {
+        "scope": "cpp",
+        "prefix": "countr_zero",
+        "body": [
+            "__builtin_ctz(${1:x})$0"
+        ],
+        "description": "Count trailing zeros with __builtin_ctz"
+    },
+    "Enumerate submasks": {
+        "scope": "cpp",
+        "prefix": "submask",
+        "body": [
+            "for (ll sub = ${1:mask};; sub = (sub - 1) & ${1:mask}) {",
+            "    $0",
+            "    if (sub == 0) break;",
+            "}"
+        ],
+        "description": "Enumerate every submask including zero"
+    },
+    "Lambda function": {
+        "scope": "cpp",
+        "prefix": "lambda",
+        "body": [
+            "auto ${1:func} = [&](${2:auto x}) {",
+            "    $0",
+            "};"
+        ],
+        "description": "Define a lambda function"
+    },
+    "Recursive lambda DFS": {
+        "scope": "cpp",
+        "prefix": "dfs",
+        "body": [
+            "auto ${1:dfs} = [&](auto&& self, int v, int par) -> void {",
+            "    $0",
+            "    for (const auto& [nv, _] : ${2:graph}[v]) {",
+            "        if (nv == par) continue;",
+            "        self(self, nv, v);",
+            "    }",
+            "};",
+            "${1:dfs}(${1:dfs}, 0, -1);"
+        ],
+        "description": "Traverse a tree with a recursive generic lambda"
+    },
+    "Breadth-first search": {
+        "scope": "cpp",
+        "prefix": "bfs",
+        "body": [
+            "const ll INF = numeric_limits<ll>::max() / 4;",
+            "vector<ll> dist(${1:n}, INF);",
+            "queue<int> que;",
+            "dist[s] = 0;",
+            "que.emplace(s);",
+            "while (!que.empty()) {",
+            "    const auto v = que.front();",
+            "    que.pop();",
+            "    $0",
+            "    for (const auto& [nv, _] : graph[v]) {",
+            "        if (dist[nv] != INF) continue;",
+            "        dist[nv] = dist[v] + 1;",
+            "        que.emplace(nv);",
+            "    }",
+            "}"
+        ],
+        "description": "Run BFS and calculate unweighted distances"
+    },
+    "Dijkstra shortest path": {
+        "scope": "cpp",
+        "prefix": "dijkstra",
+        "body": [
+            "const ll INF = numeric_limits<ll>::max() / 4;",
+            "vector<ll> dist(${1:n}, INF);",
+            "minpq<pair<ll, int>> que;",
+            "dist[s] = 0;",
+            "que.emplace(0, s);",
+            "while (!que.empty()) {",
+            "    const auto [d, v] = que.top();",
+            "    que.pop();",
+            "    if (d != dist[v]) continue;",
+            "    $0",
+            "    for (const auto& [nv, cost] : graph[v]) {",
+            "        const ll nd = d + cost;",
+            "        if (dist[nv] <= nd) continue;",
+            "        dist[nv] = nd;",
+            "        que.emplace(nd, nv);",
+            "    }",
+            "}"
+        ],
+        "description": "Calculate shortest paths with Dijkstra's algorithm"
+    },
+    "Binary search on answer": {
+        "scope": "cpp",
+        "prefix": "bins",
+        "body": [
+            "auto condition = [&](ll x) -> bool {",
+            "    return ${1:x >= 0};",
+            "};",
+            "ll ng = ${2:-1};",
+            "ll ok = ${3:n};",
+            "while (abs(ok - ng) > 1) {",
+            "    const auto mid = ng + (ok - ng) / 2;",
+            "    if (condition(mid))",
+            "        ok = mid;",
+            "    else",
+            "        ng = mid;",
+            "}",
+            "$0"
+        ],
+        "description": "Find the minimum value satisfying a monotone condition"
+    },
+    "Cumulative sum vector": {
+        "scope": "cpp",
+        "prefix": "sum",
+        "body": [
+            "vector<ll> ${1:sum}(${2:a}.size() + 1);",
+            "for (size_t i = 0; i < ${2:a}.size(); i++) ${1:sum}[i + 1] = ${1:sum}[i] + ${2:a}[i];",
+            "$0"
+        ],
+        "description": "Build a prefix-sum vector"
+    },
+    "Two-dimensional cumulative sum": {
+        "scope": "cpp",
+        "prefix": "sum2d",
+        "body": [
+            "vector ${1:sum}(${2:a}.size() + 1, vector<ll>(${2:a}[0].size() + 1));",
+            "rep(i, ${2:a}.size()) {",
+            "    rep(j, ${2:a}[i].size()) {",
+            "        ${1:sum}[i + 1][j + 1] = ${1:sum}[i + 1][j] + ${1:sum}[i][j + 1] - ${1:sum}[i][j] + ${2:a}[i][j];",
+            "    }",
+            "}",
+            "$0"
+        ],
+        "description": "Build a two-dimensional prefix-sum table"
+    },
+    "Next occurrence": {
+        "scope": "cpp",
+        "prefix": "nextpos",
+        "body": [
+            "vector nxt(${1:n} + 1, vector<int>(26, ${1:n}));",
+            "rrep(i, ${1:n}) {",
+            "    nxt[i] = nxt[i + 1];",
+            "    nxt[i][${2:s}[i] - 'a'] = i;",
+            "}"
+        ],
+        "description": "Build next occurrence table"
+    },
+    "Sliding Window": {
+        "prefix": "syakutori",
+        "body": [
+            "ll r = 0;",
+            "rep(l, $1) {",
+            "    while (r < $1 && $2) {",
+            "        $3",
+            "        r++;",
+            "    }",
+            "",
+            "    $4",
+            "",
+            "    if (r == l) {",
+            "        r++;",
+            "    } else {",
+            "        $5",
+            "    }",
+            "}"
+        ],
+        "description": "Sliding window / 尺取り法"
+    }
+}

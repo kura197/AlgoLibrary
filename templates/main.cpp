@@ -1,3 +1,7 @@
+/*
+https://github.com/kura197/AlgoLibrary
+*/
+
 #ifndef ONLINE_JUDGE
 #include "pch.hpp"
 #else
@@ -62,27 +66,22 @@ bool chmin(T& a, const T& b) {
     }
     return 0;
 }
-
 template <class T>
 auto make_vec(size_t n) {
     return vector<T>(n);
 }
-
 template <class T, class... Sizes>
 auto make_vec(size_t n, Sizes... sizes) {
     return vector(n, make_vec<T>(sizes...));
 }
-
 template <class Explicit = void, class T, enable_if_t<is_same_v<Explicit, void>, int> = 0>
 auto make_vec(size_t n, const T& value) {
     return vector<T>(n, value);
 }
-
 template <class Explicit = void, class... Args, enable_if_t<is_same_v<Explicit, void> && (sizeof...(Args) >= 2), int> = 0>
 auto make_vec(size_t n, Args... args) {
     return vector(n, make_vec(args...));
 }
-
 template <class T>
 void rd(T& x);
 template <class T, class U>
@@ -93,7 +92,6 @@ template <class T>
 void rd(vector<T>& v);
 template <class T, class U, class... Ts>
 void rd(T& x, U& y, Ts&... xs);
-
 template <class T>
 void rd(T& x) {
     cin >> x;
@@ -141,7 +139,6 @@ template <class T, class U>
 void inc(pair<T, U>& p);
 template <class... Ts>
 void inc(tuple<Ts...>& t);
-
 template <class T>
 void dec(T& x) {
     --x;
@@ -193,21 +190,15 @@ inline bool debug_enabled() {
 }
 #define DEBUG(...)                                        \
     do {                                                  \
-        if (debug_enabled()) {                            \
-            ::debug_utils::print(std::cerr, __VA_ARGS__); \
-        }                                                 \
+        if (debug_enabled()) { ::debug_utils::print(std::cerr, __VA_ARGS__); } \
     } while (false)
 #define DUMP(var)                                        \
     do {                                                 \
-        if (debug_enabled()) {                           \
-            ::debug_utils::dump(std::cerr, #var, (var)); \
-        }                                                \
+        if (debug_enabled()) { ::debug_utils::dump(std::cerr, #var, (var)); } \
     } while (false)
 #define ASSERT(expr, ...)                                                                               \
     do {                                                                                                \
-        if (!(expr)) {                                                                                  \
-            ::debug_utils::fail_assertion(std::cerr, #expr, __FILE__, __LINE__, __func__, __VA_ARGS__); \
-        }                                                                                               \
+        if (!(expr)) { ::debug_utils::fail_assertion(std::cerr, #expr, __FILE__, __LINE__, __func__, __VA_ARGS__); } \
     } while (false)
 #endif  // ONLINE_JUDGE
 
@@ -219,10 +210,8 @@ const ll MOD = 998244353;
 using mint = modint998244353;
 
 void print_yes_no(bool valid) {
-    if (valid)
-        cout << "Yes" << endl;
-    else
-        cout << "No" << endl;
+    if (valid) cout << "Yes" << endl;
+    else cout << "No" << endl;
 }
 
 //#include ""

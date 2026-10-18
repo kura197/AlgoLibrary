@@ -203,6 +203,56 @@
         ],
         "description": "Find the minimum value satisfying a monotone condition"
     },
+    "Ternary search on doubles": {
+        "scope": "cpp",
+        "prefix": [
+            "ternary",
+            "ternary_double"
+        ],
+        "body": [
+            "auto objective = [&](double x) -> double {",
+            "    return ${1:x * x};",
+            "};",
+            "double left = ${2:0.0};",
+            "double right = ${3:1.0};",
+            "rep(_, 100) {",
+            "    const double mid1 = (2.0 * left + right) / 3.0;",
+            "    const double mid2 = (left + 2.0 * right) / 3.0;",
+            "    if (objective(mid1) ${4:<} objective(mid2))",
+            "        right = mid2;",
+            "    else",
+            "        left = mid1;",
+            "}",
+            "const double x = (left + right) / 2.0;",
+            "$0"
+        ],
+        "description": "Find an extremum of a unimodal function on a double interval"
+    },
+    "Ternary search on integers": {
+        "scope": "cpp",
+        "prefix": "ternary_int",
+        "body": [
+            "auto objective = [&](ll x) {",
+            "    return ${1:x * x};",
+            "};",
+            "ll left = ${2:0};",
+            "ll right = ${3:n};",
+            "while (right - left > 2) {",
+            "    const ll mid1 = left + (right - left) / 3;",
+            "    const ll mid2 = right - (right - left) / 3;",
+            "    if (objective(mid1) ${4:<} objective(mid2))",
+            "        right = mid2;",
+            "    else",
+            "        left = mid1;",
+            "}",
+            "ll x = left;",
+            "for (ll i = left + 1; i <= right; i++) {",
+            "    if (objective(i) ${4:<} objective(x)) x = i;",
+            "}",
+            "$0"
+        ],
+        "description": "Find an extremum of a unimodal function on an inclusive integer interval"
+    },
     "Cumulative sum vector": {
         "scope": "cpp",
         "prefix": "sum",

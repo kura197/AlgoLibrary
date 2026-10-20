@@ -65,7 +65,8 @@ struct Trie {
     }
 
     // word に対応するノード番号を返す。存在しなければ -1
-    int find(const string& word) const {
+    // erase 後もノード自体は残るため、登録数が0のノードも返却対象となる
+    int find_node(const string& word) const {
         int node_id = root;
         for (char ch : word) {
             int c = (int)ch - base;
@@ -76,9 +77,26 @@ struct Trie {
         return node_id;
     }
 
+    // word の各 prefix に対応するノード番号を、root から順に返す
+    // 文字範囲外または存在しない遷移に到達した時点で打ち切る
+    // 戻り値は必ず root を含み、戻り値の size() - 1 が一致した文字数になる
+    // erase 後もノード自体は残るため、登録数が0のノードも返却対象となる
+    vector<int> get_prefix_nodes(const string& word) const {
+        int node_id = root;
+        vector<int> result{node_id};
+        for (char ch : word) {
+            int c = (int)ch - base;
+            if (c < 0 || c >= char_size) return result;
+            node_id = nodes[node_id].next[c];
+            if (node_id == -1) return result;
+            result.push_back(node_id);
+        }
+        return result;
+    }
+
     // 完全一致、または prefix=true なら前方一致で検索する
     bool search(const string& word, bool prefix = false) const {
-        int node_id = find(word);
+        int node_id = find_node(word);
         if (node_id == -1) return false;
         if (prefix) return nodes[node_id].common > 0;
         return !nodes[node_id].accept.empty();
@@ -96,14 +114,14 @@ struct Trie {
 
     // word と完全一致する文字列の登録個数
     int count(const string& word) const {
-        int node_id = find(word);
+        int node_id = find_node(word);
         if (node_id == -1) return 0;
         return (int)nodes[node_id].accept.size();
     }
 
     // prefix を持つ文字列の登録個数
     int prefix_count(const string& prefix) const {
-        int node_id = find(prefix);
+        int node_id = find_node(prefix);
         if (node_id == -1) return 0;
         return nodes[node_id].common;
     }

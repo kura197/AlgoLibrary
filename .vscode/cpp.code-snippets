@@ -194,10 +194,8 @@
             "ll ok = ${3:n};",
             "while (abs(ok - ng) > 1) {",
             "    const auto mid = ng + (ok - ng) / 2;",
-            "    if (condition(mid))",
-            "        ok = mid;",
-            "    else",
-            "        ng = mid;",
+            "    if (condition(mid)) ok = mid;",
+            "    else ng = mid;",
             "}",
             "$0"
         ],

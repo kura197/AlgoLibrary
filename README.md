@@ -26,6 +26,7 @@
 - `interval_set.h`
 - `is_nibu.h`
 - `kmp.h`
+- `kth_root.h`
 - `lca.h`
 - `lcs.h`
 - `lis.h`

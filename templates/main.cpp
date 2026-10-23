@@ -178,6 +178,12 @@ void uniq(vector<T>& v) {
     sort(v.begin(), v.end());
     v.erase(std::unique(v.begin(), v.end()), v.end());
 }
+template <class T>
+vector<T> get_sum_vector(const vector<T>& v) {
+    vector<T> sum(v.size() + 1);
+    for (int i = 0; i < int(v.size()); i++) sum[i + 1] = sum[i] + v[i];
+    return sum;
+}
 
 #ifdef ONLINE_JUDGE
 #define DEBUG(...) ((void)0)

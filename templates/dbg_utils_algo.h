@@ -208,6 +208,52 @@ inline std::size_t find_replacement_field(std::string_view format) {
     return std::string_view::npos;
 }
 
+inline std::string_view trim(std::string_view text) {
+    while (!text.empty() && (text.front() == ' ' || text.front() == '\t')) {
+        text.remove_prefix(1);
+    }
+    while (!text.empty() && (text.back() == ' ' || text.back() == '\t')) {
+        text.remove_suffix(1);
+    }
+    return text;
+}
+
+inline std::size_t find_dump_separator(std::string_view names) {
+    int depth = 0;
+    for (std::size_t i = 0; i < names.size(); ++i) {
+        if (names[i] == '(' || names[i] == '[' || names[i] == '{') {
+            ++depth;
+        } else if (names[i] == ')' || names[i] == ']' || names[i] == '}') {
+            --depth;
+        } else if (names[i] == ',' && depth == 0) {
+            return i;
+        }
+    }
+    return std::string_view::npos;
+}
+
+template <typename T, typename... Rest>
+void dump_values(
+    std::ostream& out,
+    std::string_view names,
+    const T& value,
+    const Rest&... rest
+) {
+    const std::size_t separator = find_dump_separator(names);
+    const std::string_view name = trim(names.substr(0, separator));
+    out << name << " = ";
+    write_value(out, value);
+
+    if constexpr (sizeof...(rest) > 0) {
+        out << ", ";
+        const std::string_view remaining =
+            separator == std::string_view::npos ? std::string_view{} : names.substr(separator + 1);
+        dump_values(out, remaining, rest...);
+    } else {
+        out << '\n';
+    }
+}
+
 inline void format_to(std::ostream& out, std::string_view format) {
     write_literal(out, format);
 }
@@ -256,12 +302,11 @@ void print(std::ostream& out, std::string_view format, const Args&... args) {
     emit(out, buffer);
 }
 
-template <typename T>
-void dump(std::ostream& out, std::string_view name, const T& value) {
+template <typename... Args>
+void dump(std::ostream& out, std::string_view names, const Args&... values) {
+    static_assert(sizeof...(values) > 0);
     std::ostringstream buffer;
-    buffer << name << " = ";
-    detail::write_value(buffer, value);
-    buffer << '\n';
+    detail::dump_values(buffer, names, values...);
     emit(out, buffer);
     out.flush();
 }

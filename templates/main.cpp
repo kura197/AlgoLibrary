@@ -198,9 +198,9 @@ inline bool debug_enabled() {
     do {                                                  \
         if (debug_enabled()) { ::debug_utils::print(std::cerr, __VA_ARGS__); } \
     } while (false)
-#define DUMP(var)                                        \
+#define DUMP(...)                                        \
     do {                                                 \
-        if (debug_enabled()) { ::debug_utils::dump(std::cerr, #var, (var)); } \
+        if (debug_enabled()) { ::debug_utils::dump(std::cerr, #__VA_ARGS__, __VA_ARGS__); } \
     } while (false)
 #define ASSERT(expr, ...)                                                                               \
     do {                                                                                                \

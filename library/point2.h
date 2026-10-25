@@ -77,19 +77,31 @@ long long dot(const point &a, const point &b) {
 }
 
 // 原点から見た偏角順で a, b を比較する
-// まず x 軸の負側をまたぐかどうかで半平面を分け、
-// 同じ半平面内では外積の符号で反時計回り順を判定する
+// 原点を先頭とし、同じ偏角では原点に近い点を先に並べる
 bool cmp(const point &a, const point &b) {
+    bool a_is_origin = (a.x == 0 and a.y == 0);
+    bool b_is_origin = (b.x == 0 and b.y == 0);
+    if (a_is_origin != b_is_origin) return a_is_origin;
+    if (a_is_origin) return false;
+
     // 下半平面、または x 軸負側を 1 とする
     int ah = (a.y < 0 or (a.y == 0 and a.x < 0));
     int bh = (b.y < 0 or (b.y == 0 and b.x < 0));
     // 上半平面を先に並べる
     if (ah != bh) return ah < bh;
+
     // 同じ半平面内では、a から b が反時計回りなら a を先にする
-    return cross(a, b) > 0;
+    __int128 cr = (__int128)a.x * b.y - (__int128)a.y * b.x;
+    if (cr != 0) return cr > 0;
+
+    // 同じ偏角なら原点から近い点を先にする
+    __int128 distance_a = (__int128)a.x * a.x + (__int128)a.y * a.y;
+    __int128 distance_b = (__int128)b.x * b.x + (__int128)b.y * b.y;
+    return distance_a < distance_b;
 }
 
-// 原点まわりの偏角順に点列をソートする
+// 原点を先頭に置き、正の x 軸から反時計回りの偏角順に点列をソートする
+// 同じ偏角の点は原点から近い順に並べる
 void argument_sort(vector<point> &points) {
     sort(points.begin(), points.end(), cmp);
 }

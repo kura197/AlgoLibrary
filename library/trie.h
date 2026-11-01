@@ -9,7 +9,8 @@ using namespace std;
 
 // 文字列を管理する Trie 木
 // 例: Trie<26, 'a'> trie;
-// 各操作の計算量は文字列長を L として O(L)
+// 以下、文字列長を L、char_size を C、ノード数を V、
+// 登録文字列数を N、戻り値に含まれる ID 数を K とする。
 template<int char_size = 26, int base = 'a'>
 struct Trie {
     static_assert(char_size > 0, "Trie: char_size must be positive");
@@ -24,6 +25,7 @@ struct Trie {
         // このノードを通る、現在登録されている文字列の個数
         int common;
 
+        // O(C)
         explicit Node(int c_) : next(char_size, -1), c(c_), common(0) {}
     };
 
@@ -31,11 +33,13 @@ struct Trie {
     int root;
     int next_word_id;
 
+    // O(C)
     Trie() : root(0), next_word_id(0) {
         nodes.push_back(Node(-1));
     }
 
-    // 文字列を word_id とともに登録する
+    // 文字列を word_id とともに登録する。
+    // O(L) + 新しく作るノード数 * O(C)、最悪 O(LC)
     void insert(const string& word, int word_id) {
         if (!valid(word)) {
             assert(false && "Trie::insert: character is out of range");
@@ -59,13 +63,14 @@ struct Trie {
         next_word_id++;
     }
 
-    // 文字列を登録し、挿入順を ID として使用する
+    // 文字列を登録し、挿入順を ID として使用する。
+    // O(L) + 新しく作るノード数 * O(C)、最悪 O(LC)
     void insert(const string& word) {
         insert(word, next_word_id);
     }
 
-    // word に対応するノード番号を返す。存在しなければ -1
-    // erase 後もノード自体は残るため、登録数が0のノードも返却対象となる
+    // word に対応するノード番号を返す。存在しなければ -1。O(L)
+    // erase 後もノード自体は残るため、登録数が0のノードも返却対象となる。
     int find_node(const string& word) const {
         int node_id = root;
         for (char ch : word) {
@@ -81,6 +86,7 @@ struct Trie {
     // 文字範囲外または存在しない遷移に到達した時点で打ち切る
     // 戻り値は必ず root を含み、戻り値の size() - 1 が一致した文字数になる
     // erase 後もノード自体は残るため、登録数が0のノードも返却対象となる
+    // O(L)
     vector<int> get_prefix_nodes(const string& word) const {
         int node_id = root;
         vector<int> result{node_id};
@@ -94,7 +100,7 @@ struct Trie {
         return result;
     }
 
-    // 完全一致、または prefix=true なら前方一致で検索する
+    // 完全一致、または prefix=true なら前方一致で検索する。O(L)
     bool search(const string& word, bool prefix = false) const {
         int node_id = find_node(word);
         if (node_id == -1) return false;
@@ -102,31 +108,31 @@ struct Trie {
         return !nodes[node_id].accept.empty();
     }
 
-    // prefix を持つ文字列が存在するか
+    // prefix を持つ文字列が存在するか。O(L)
     bool start_with(const string& prefix) const {
         return search(prefix, true);
     }
 
-    // start_with と同じ
+    // start_with と同じ。O(L)
     bool starts_with(const string& prefix) const {
         return start_with(prefix);
     }
 
-    // word と完全一致する文字列の登録個数
+    // word と完全一致する文字列の登録個数。O(L)
     int count(const string& word) const {
         int node_id = find_node(word);
         if (node_id == -1) return 0;
         return (int)nodes[node_id].accept.size();
     }
 
-    // prefix を持つ文字列の登録個数
+    // prefix を持つ文字列の登録個数。O(L)
     int prefix_count(const string& prefix) const {
         int node_id = find_node(prefix);
         if (node_id == -1) return 0;
         return nodes[node_id].common;
     }
 
-    // 辞書順で value 以下の文字列の登録個数: O(|value| * char_size)
+    // 辞書順で value 以下の文字列の登録個数。O(LC)
     int count_less_equal(const string& value) const {
         int result = 0;
         int node_id = root;
@@ -156,13 +162,14 @@ struct Trie {
         return result + (int)nodes[node_id].accept.size();
     }
 
-    // 辞書順で value より小さい文字列の登録個数: O(|value| * char_size)
+    // 辞書順で value より小さい文字列の登録個数。O(LC)
     int count_less(const string& value) const {
         return count_less_equal(value) - count(value);
     }
 
     // word と一致する文字列を1つ削除する。存在しなければ false
     // ノード自体は削除せず、以後の insert で再利用する
+    // O(L)
     bool erase(const string& word) {
         vector<int> path{root};
         int node_id = root;
@@ -180,7 +187,7 @@ struct Trie {
         return true;
     }
 
-    // query の prefix として登録されている全文字列の ID を返す
+    // query の prefix として登録されている全文字列の ID を返す。O(L + K)
     vector<int> common_prefix_search(const string& query) const {
         vector<int> result;
         int node_id = root;
@@ -196,21 +203,22 @@ struct Trie {
         return result;
     }
 
-    // 現在登録されている文字列の総数
+    // 現在登録されている文字列の総数。O(1)
     int count() const {
         return nodes[root].common;
     }
 
+    // O(1)
     bool empty() const {
         return count() == 0;
     }
 
-    // Trie 木が確保しているノード数
+    // Trie 木が確保しているノード数。O(1)
     int size() const {
         return (int)nodes.size();
     }
 
-    // 全ての文字列とノードを削除する
+    // 全ての文字列とノードを削除する。O(VC + N)
     void clear() {
         nodes.clear();
         nodes.push_back(Node(-1));
@@ -218,6 +226,7 @@ struct Trie {
     }
 
 private:
+    // 全ての文字が対象範囲内か判定する。O(L)
     bool valid(const string& word) const {
         for (char ch : word) {
             int c = (int)ch - base;

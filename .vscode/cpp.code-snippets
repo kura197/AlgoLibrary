@@ -141,8 +141,9 @@
         "scope": "cpp",
         "prefix": "bfs",
         "body": [
-            "const ll INF = numeric_limits<ll>::max() / 4;",
-            "vector<ll> dist(${1:n}, INF);",
+            "using T = ${1:ll};",
+            "const T INF = numeric_limits<T>::max() / 4;",
+            "vector<T> dist(${2:n}, INF);",
             "queue<int> que;",
             "dist[s] = 0;",
             "que.emplace(s);",
@@ -158,6 +159,32 @@
             "}"
         ],
         "description": "Run BFS and calculate unweighted distances"
+    },
+    "0-1 BFS shortest path": {
+        "scope": "cpp",
+        "prefix": "01bfs",
+        "body": [
+            "using T = ${1:ll};",
+            "const T INF = numeric_limits<T>::max() / 4;",
+            "vector<T> dist(${2:n}, INF);",
+            "deque<pair<T, int>> que;",
+            "dist[s] = 0;",
+            "que.emplace_front(dist[s], s);",
+            "while (!que.empty()) {",
+            "    const auto [d, v] = que.front();",
+            "    que.pop_front();",
+            "    if (d != dist[v]) continue;",
+            "    $0",
+            "    for (const auto& [nv, cost] : graph[v]) {",
+            "        const T nd = d + cost;",
+            "        if (dist[nv] <= nd) continue;",
+            "        dist[nv] = nd;",
+            "        if (cost == 0) que.emplace_front(nd, nv);",
+            "        else que.emplace_back(nd, nv);",
+            "    }",
+            "}"
+        ],
+        "description": "Calculate shortest paths in a graph with edge weights 0 or 1"
     },
     "Dijkstra shortest path": {
         "scope": "cpp",

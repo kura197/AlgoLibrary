@@ -18,6 +18,7 @@
 - `edge.h`
 - `euler_tour.h`
 - `fraction.h`
+- `functional_graph.h`
 - `gcd.h`
 - `geometry2d.h`
 - `graph.h`

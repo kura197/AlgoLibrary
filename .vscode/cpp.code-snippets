@@ -112,6 +112,74 @@
         ],
         "description": "Enumerate every submask including zero"
     },
+    "Subset zeta transform": {
+        "scope": "cpp",
+        "prefix": ["zeta", "zeta_subset"],
+        "body": [
+            "// In-place: a[S] = sum of original a[T] for T subset of S.",
+            "// Array size: 2^n. Time: O(n * 2^n).",
+            "rep(i, ${1:n}) {",
+            "    for (ll mask = 0; mask < (1LL << ${1:n}); mask++) {",
+            "        if (mask & (1LL << i)) {",
+            "            ${2:a}[mask] += ${2:a}[mask ^ (1LL << i)];",
+            "        }",
+            "    }",
+            "}",
+            "$0"
+        ],
+        "description": "In-place subset zeta transform: sum over all subsets, including itself"
+    },
+    "Subset Mobius transform": {
+        "scope": "cpp",
+        "prefix": ["mobius", "mobius_subset"],
+        "body": [
+            "// In-place inverse of the subset zeta transform.",
+            "// Array size: 2^n. Time: O(n * 2^n).",
+            "rep(i, ${1:n}) {",
+            "    for (ll mask = 0; mask < (1LL << ${1:n}); mask++) {",
+            "        if (mask & (1LL << i)) {",
+            "            ${2:a}[mask] -= ${2:a}[mask ^ (1LL << i)];",
+            "        }",
+            "    }",
+            "}",
+            "$0"
+        ],
+        "description": "In-place subset Mobius transform: inverse of the subset zeta transform"
+    },
+    "Superset zeta transform": {
+        "scope": "cpp",
+        "prefix": "zeta_superset",
+        "body": [
+            "// In-place: a[S] = sum of original a[T] for T superset of S.",
+            "// Array size: 2^n. Time: O(n * 2^n).",
+            "rep(i, ${1:n}) {",
+            "    for (ll mask = 0; mask < (1LL << ${1:n}); mask++) {",
+            "        if (!(mask & (1LL << i))) {",
+            "            ${2:a}[mask] += ${2:a}[mask | (1LL << i)];",
+            "        }",
+            "    }",
+            "}",
+            "$0"
+        ],
+        "description": "In-place superset zeta transform: sum over all supersets, including itself"
+    },
+    "Superset Mobius transform": {
+        "scope": "cpp",
+        "prefix": "mobius_superset",
+        "body": [
+            "// In-place inverse of the superset zeta transform.",
+            "// Array size: 2^n. Time: O(n * 2^n).",
+            "rep(i, ${1:n}) {",
+            "    for (ll mask = 0; mask < (1LL << ${1:n}); mask++) {",
+            "        if (!(mask & (1LL << i))) {",
+            "            ${2:a}[mask] -= ${2:a}[mask | (1LL << i)];",
+            "        }",
+            "    }",
+            "}",
+            "$0"
+        ],
+        "description": "In-place superset Mobius transform: inverse of the superset zeta transform"
+    },
     "Lambda function": {
         "scope": "cpp",
         "prefix": "lambda",

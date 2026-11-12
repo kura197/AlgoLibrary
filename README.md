@@ -63,6 +63,7 @@
 - `stack.h`
 - `string_next.h`
 - `suffix_lcp.h`
+- `timer.h`
 - `topological_sort.h`
 - `tree.h`
 - `trace.h`

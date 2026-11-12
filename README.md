@@ -4,6 +4,7 @@
 
 - `Bellman-Ford.h`
 - `SCC.h`
+- `aho_corasick.h`
 - `auxiliary_tree.h`
 - `base.h`
 - `pow.h`

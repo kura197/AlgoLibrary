@@ -15,6 +15,7 @@ using namespace atcoder;
 
 using ll = long long;
 using ull = unsigned long long;
+using ld = long double;
 using int128_t = __int128_t;
 using uint128_t = __uint128_t;
 using vl = vector<ll>;

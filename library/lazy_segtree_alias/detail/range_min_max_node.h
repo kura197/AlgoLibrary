@@ -27,6 +27,10 @@ RangeMinMaxNode<T> range_min_max_op(
 
 template <class T>
 RangeMinMaxNode<T> range_min_max_e() {
+    static_assert(
+        std::numeric_limits<T>::is_specialized,
+        "RangeMinMaxNode<T>: std::numeric_limits<T> must be specialized"
+    );
     return {
         std::numeric_limits<T>::max(),
         std::numeric_limits<T>::lowest(),

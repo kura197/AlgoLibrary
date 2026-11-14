@@ -14,6 +14,10 @@ T range_add_range_max_op(T a, T b) {
 
 template <class T>
 T range_add_range_max_e() {
+    static_assert(
+        std::numeric_limits<T>::is_specialized,
+        "RangeAddRangeMax<T>: std::numeric_limits<T> must be specialized"
+    );
     return std::numeric_limits<T>::lowest();
 }
 

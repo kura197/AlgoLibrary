@@ -13,6 +13,10 @@ T rmaxq_op(T a, T b) {
 
 template <class T>
 T rmaxq_e() {
+    static_assert(
+        std::numeric_limits<T>::is_specialized,
+        "RMaxQ<T>: std::numeric_limits<T> must be specialized"
+    );
     return std::numeric_limits<T>::lowest();
 }
 

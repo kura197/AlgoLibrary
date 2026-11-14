@@ -13,6 +13,10 @@ T rmq_op(T a, T b) {
 
 template <class T>
 T rmq_e() {
+    static_assert(
+        std::numeric_limits<T>::is_specialized,
+        "RMQ<T>: std::numeric_limits<T> must be specialized"
+    );
     return std::numeric_limits<T>::max();
 }
 
